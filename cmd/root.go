@@ -14,36 +14,28 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "tidytask",
 	Short: "A simple Linux CLI tool for managing your to-do-list. Built with Go",
-	Long: `TidyTask is a CLI tool for managing your to-do-list. You can add, edit, list, search, complete and remove tasks
-Tasks have an ID assigned by the program, and can have an optional message, deadline, and a priority status. These are
-set and managed using flags.
+	Long: `TidyTask CLI v1.0.0
 
-Priority tasks are shown in blue and will always be at the top of your list. Tasks due today are shown in yellow,
-overdue tasks in red, and completed tasks in green. 
+A simple Linux CLI tool for managing your to-do-list. Built with Go
 
-Examples:
-tidytask add --message "Finish Homework" --deadline 2025-08-15
--> create task "Finish Homework" with deadline August 15, 2025
+DESCRIPTION
+TidyTask is a lightweight CLI tool for managing your to-do list on Linux.
 
-tidytask remove 3 
--> remove task with ID 3 from system
+USAGE
+$ tidytask COMMAND [FLAGS]
 
-tidytask search --message "Homework" 
--> search for all tasks containing "Homework" in their message)
+COMMANDS:
+add		Create a new task
+complete [ID]	Mark a task as complete by ID
+remove [ID]	Remove a task by ID
+edit [ID]	Edit a task by ID
+list		List all tasks
+search		Search tasks by keyword
 
-tidytask edit 1 --deadline 2025-08-20
--> change deadline for task with ID 1 to August 20, 2025
+Flags:
+-h --help		Help for TidyTask
 
-tidytask complete 5 
--> mark task with ID 5 as complete
-
-tidytask list 
--> list all tasks, closest deadline to furthest deadline
-
-tidytask list --completed --reverse 
--> list all completed tasks in reverse order of completion
-
-Use --help for more information.`,
+Use TidyTask [command] --help for more information about a command.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

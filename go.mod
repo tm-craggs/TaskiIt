@@ -1,4 +1,4 @@
-module TidyTask
+module github.com/tcraggs/TidyTask
 
 go 1.24.2
 
