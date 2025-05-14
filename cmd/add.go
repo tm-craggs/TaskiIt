@@ -3,12 +3,13 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/tcraggs/TidyTask/task"
 )
 
 var (
-	message  string
 	deadline string
-	priority bool
+	priority = pflag.BoolP("priority", "p", false, "Mark task as high priority")
 )
 
 // addCmd represents the add command
@@ -20,25 +21,25 @@ var addCmd = &cobra.Command{
 		if len(args) == 0 {
 			fmt.Println("Please enter a task name")
 		}
-		title := args[0]
-		fmt.Println(title)
 
-		if message != "" {
-			fmt.Println(message)
+		title := args[0]
+
+		newTask := task.Task{
+			ID:       len(task.Tasks) + 1,
+			Title:    title,
+			Deadline: deadline,
+			Complete: false,
+			Priority: *priority,
 		}
-		if deadline != "" {
-			fmt.Println(deadline)
-		}
-		if priority {
-			fmt.Println(priority)
-		}
+
+		task.SaveTask(newTask)
+
 	},
 }
 
 func init() {
-	addCmd.Flags().StringVarP(&message, "message", "m", "", "Message to send")
 	addCmd.Flags().StringVarP(&deadline, "deadline", "d", "", "Set a deadline (e.g. 2025-05-14)")
-	addCmd.Flags().BoolVarP(&priority, "priority", "p", false, "Mark the task as high priority")
+	addCmd.Flags().BoolVarP(priority, "priority", "p", false, "Mark the task as high priority")
 
 	rootCmd.AddCommand(addCmd)
 

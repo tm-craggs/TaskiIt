@@ -8,5 +8,6 @@ import (
 )
 
 func main() {
+	// begin command execution
 	cmd.Execute()
 }
