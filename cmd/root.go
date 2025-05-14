@@ -18,9 +18,6 @@ var rootCmd = &cobra.Command{
 
 A simple Linux CLI tool for managing your to-do-list. Built with Go
 
-DESCRIPTION
-TidyTask is a lightweight CLI tool for managing your to-do list on Linux.
-
 USAGE
 $ tidytask COMMAND [FLAGS]
 
