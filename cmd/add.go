@@ -24,8 +24,21 @@ var addCmd = &cobra.Command{
 
 		title := args[0]
 
+		if err := task.LoadTasks(); err != nil {
+			fmt.Printf("Error loading tasks: %s\n", err.Error())
+			return
+		}
+
+		// Find max ID
+		nextID := 1
+		for _, t := range task.Tasks {
+			if t.ID >= nextID {
+				nextID = t.ID + 1
+			}
+		}
+
 		newTask := task.Task{
-			ID:       len(task.Tasks) + 1,
+			ID:       nextID,
 			Title:    title,
 			Deadline: deadline,
 			Complete: false,
