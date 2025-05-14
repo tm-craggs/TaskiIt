@@ -22,18 +22,24 @@ var addCmd = &cobra.Command{
 			fmt.Println("Please enter a task name")
 		}
 
+		// task title is taken in as args
 		title := args[0]
 
+		// load current tasks in json into Task
 		if err := task.LoadTasks(); err != nil {
 			fmt.Printf("Error loading tasks: %s\n", err.Error())
 			return
 		}
 
-		// Find max ID
+		// find max ID
 		nextID := 1
-		for _, t := range task.Tasks {
+
+		// largest ID will typically be at the end of the list, so reverse traverse list
+		for i := len(task.Tasks) - 1; i >= 0; i-- {
+			t := task.Tasks[i]
 			if t.ID >= nextID {
 				nextID = t.ID + 1
+				break // done, found max
 			}
 		}
 
