@@ -59,3 +59,8 @@ func DeleteTask(id int) error {
 	_, err := DB.Exec("DELETE FROM tasks WHERE id = ?", id)
 	return err
 }
+
+func DeleteAllTasks() error {
+	_, err := DB.Exec("DELETE FROM tasks")
+	return err
+}
