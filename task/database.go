@@ -64,3 +64,23 @@ func DeleteAllTasks() error {
 	_, err := DB.Exec("DELETE FROM tasks")
 	return err
 }
+
+func CompleteTask(id int) error {
+	_, err := DB.Exec("UPDATE tasks SET complete = 1 WHERE id = ?", id)
+	return err
+}
+
+func CompleteAllTasks() error {
+	_, err := DB.Exec("UPDATE tasks SET complete = 1")
+	return err
+}
+
+func ReopenTask(id int) error {
+	_, err := DB.Exec("UPDATE tasks SET complete = 0 WHERE id = ?", id)
+	return err
+}
+
+func ReopenAllTasks() error {
+	_, err := DB.Exec("UPDATE tasks SET complete = 0")
+	return err
+}
