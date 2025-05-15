@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	//"github.com/spf13/pflag"
+	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"github.com/tcraggs/TidyTask/task"
 )
@@ -30,9 +31,11 @@ var listCmd = &cobra.Command{
 		table.Header([]string{"ID", "Title", "Deadline", "Complete", "Priority"})
 
 		for _, t := range tasks {
-			complete := "No"
+			var complete string
 			if t.Complete {
-				complete = "Yes"
+				complete = color.New(color.FgGreen, color.Bold).Sprint("✔")
+			} else {
+				complete = color.New(color.FgRed, color.Bold).Sprint("✘")
 			}
 
 			priority := "Normal"
