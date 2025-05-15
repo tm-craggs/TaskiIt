@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/muesli/termenv"
 	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
 )
 
@@ -17,7 +17,6 @@ var listCmd = &cobra.Command{
 	Long:  `List all tasks`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-
 		// get array of all tasks from database
 		tasks, err := task.GetTasks()
 		if err != nil {
@@ -31,62 +30,73 @@ var listCmd = &cobra.Command{
 			return
 		}
 
-		// define table
+		// Setup termenv profile for colors
+		p := termenv.ColorProfile()
+
+		// Define colors (using RGB for more precise control)
+		green := p.Color("#00FF00")      // bright green
+		red := p.Color("#FF5555")        // light red
+		white := p.Color("#FFFFFF")      // white
+		brightBlue := p.Color("#569CD6") // bright blue
+		orange := p.Color("#FF8000")     // orange
+		yellow := p.Color("#FFFF00")     // yellow
+
+		// Helper for bold text
+		bold := func(s string, c termenv.Color) string {
+			return termenv.String(s).Foreground(c).Bold().String()
+		}
+
 		table := tablewriter.NewWriter(os.Stdout)
-		table.Header([]string{"ID", "Title", "Deadline", "Complete", "Priority"})
+		table.Header([]string{"ID", "Title", "Due", "Complete", "Priority"})
 
-		// iterate through all tasks in array
 		for _, t := range tasks {
+			var complete, title, due, priority string
 
-			// variables defined for entry into table
-			var complete, title, deadline, priority string
+			relativeDue := formatDeadline(t.Deadline)
 
-			// convert date to deadline relative to today
-			relativeDeadline := formatDeadline(t.Deadline)
-
-			// if task complete, colour all entries green
 			if t.Complete {
-				green := color.New(color.FgGreen, color.Bold).SprintFunc()
-				complete = green("✔")
-				title = green(t.Title)
-				deadline = green(relativeDeadline)
+				// All green if complete
+				complete = bold("✔", green)
+				title = bold(t.Title, green)
+				due = bold(relativeDue, green)
 				if t.Priority {
-					priority = green("High")
+					priority = bold("High", green)
 				} else {
-					priority = green("Normal")
+					priority = bold("Normal", green)
 				}
 			} else {
+				// Incomplete task
 
-				// colour complete red
-				complete = color.New(color.FgRed, color.Bold).Sprint("✘")
+				complete = bold("✘", red)
 
-				// get title
-				title = t.Title
-
-				// apply color based on deadline urgency
-				switch relativeDeadline {
+				// Color title and due based on due date urgency
+				switch relativeDue {
 				case "Overdue":
-					deadline = color.New(color.FgRed, color.Bold).Sprint(relativeDeadline)
+					title = bold(t.Title, red)
+					due = bold(relativeDue, red)
 				case "Today":
-					deadline = color.New(color.FgYellow, color.Bold).Sprint(relativeDeadline)
+					title = bold(t.Title, orange)
+					due = bold(relativeDue, orange)
 				case "Tomorrow":
-					deadline = color.New(color.FgHiYellow, color.Bold).Sprint(relativeDeadline)
+					title = bold(t.Title, yellow)
+					due = bold(relativeDue, yellow)
 				default:
-					deadline = relativeDeadline
+					title = bold(t.Title, white)
+					due = bold(relativeDue, white)
 				}
 
-				// colour priority blue if high
+				// Priority color
 				if t.Priority {
-					priority = color.New(color.FgHiBlue, color.Bold).Sprint("High")
+					priority = bold("High", brightBlue)
 				} else {
-					priority = "Normal"
+					priority = bold("Normal", white)
 				}
 			}
 
 			table.Append([]string{
 				fmt.Sprintf("%d", t.ID),
 				title,
-				deadline,
+				due,
 				complete,
 				priority,
 			})
