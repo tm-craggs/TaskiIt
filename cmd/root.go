@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/tcraggs/TidyTask/task"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -36,6 +37,9 @@ Use TidyTask [command] --help for more information about a command.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		task.InitDB()
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

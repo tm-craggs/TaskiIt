@@ -1,63 +1,31 @@
 package task
 
-import (
-	"encoding/json"
-	"fmt"
-	"os"
-)
-
-func LoadTasks() error {
-	file, err := os.Open("tasks.json")
+func GetAllTasks() ([]Task, error) {
+	rows, err := DB.Query("SELECT id, title, deadline, complete, priority FROM tasks")
 	if err != nil {
-		if os.IsNotExist(err) {
-			Tasks = []Task{}
-			return nil
-		}
+		return nil, err
 	}
-	defer func() {
-		if closeErr := file.Close(); closeErr != nil {
-			err = closeErr
-		}
-	}()
-
-	return json.NewDecoder(file).Decode(&Tasks)
-}
-
-func SaveTask(task Task) error {
-	const filename = "tasks.json"
+	defer rows.Close()
 
 	var tasks []Task
-
-	// Check if the file exists
-	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// Decode existing tasks if file is not empty
-	info, err := file.Stat()
-	if err != nil {
-		return err
-	}
-	if info.Size() > 0 {
-		if err := json.NewDecoder(file).Decode(&tasks); err != nil {
-			return fmt.Errorf("error decoding existing tasks: %w", err)
+	for rows.Next() {
+		var t Task
+		err := rows.Scan(&t.ID, &t.Title, &t.Deadline, &t.Complete, &t.Priority)
+		if err != nil {
+			return nil, err
 		}
+		tasks = append(tasks, t)
 	}
+	return tasks, nil
+}
 
-	// Append the new task
-	tasks = append(tasks, task)
+func AddTask(t Task) error {
+	stmt := `INSERT INTO tasks (title, deadline, complete, priority) VALUES (?, ?, ?, ?)`
+	_, err := DB.Exec(stmt, t.Title, t.Deadline, t.Complete, t.Priority)
+	return err
+}
 
-	// Truncate the file and rewrite it
-	if err := file.Truncate(0); err != nil {
-		return err
-	}
-	if _, err := file.Seek(0, 0); err != nil {
-		return err
-	}
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(tasks)
+func DeleteTask(id int) error {
+	_, err := DB.Exec("DELETE FROM tasks WHERE id = ?", id)
+	return err
 }

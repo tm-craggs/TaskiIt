@@ -7,5 +7,3 @@ type Task struct {
 	Complete bool   `json:"complete"`
 	Priority bool   `json:"priority"`
 }
-
-var Tasks []Task
