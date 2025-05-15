@@ -84,3 +84,32 @@ func ReopenAllTasks() error {
 	_, err := DB.Exec("UPDATE tasks SET complete = 0")
 	return err
 }
+
+func GetTasks() ([]Task, error) {
+	query := `
+		SELECT id, title, deadline, complete, priority
+        FROM tasks
+		ORDER BY
+			priority DESC,
+			deadline IS NOT NOT NULL DESC,
+			deadline ASC `
+
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []Task
+	for rows.Next() {
+		var t Task
+		err := rows.Scan(&t.ID, &t.Title, &t.Deadline, &t.Complete, &t.Priority)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, t)
+	}
+
+	return tasks, nil
+
+}
