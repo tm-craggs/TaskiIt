@@ -34,16 +34,20 @@ var listCmd = &cobra.Command{
 		p := termenv.ColorProfile()
 
 		// Define colors (using RGB for more precise control)
-		green := p.Color("#00FF00")      // bright green
-		red := p.Color("#FF5555")        // light red
-		white := p.Color("#FFFFFF")      // white
-		brightBlue := p.Color("#569CD6") // bright blue
-		orange := p.Color("#FF8000")     // orange
-		yellow := p.Color("#FFFF00")     // yellow
+		green := p.Color("#00FF00")       // bright green
+		red := p.Color("#FF5555")         // light red
+		brightBlue := p.Color("#35c5ff ") // bright blue
+		orange := p.Color("#FF8000")      // orange
+		yellow := p.Color("#FFFF00")      // yellow
+		grey := p.Color("#FFFFFF")
 
 		// Helper for bold text
-		bold := func(s string, c termenv.Color) string {
-			return termenv.String(s).Foreground(c).Bold().String()
+		//bold := func(s string, c termenv.Color) string {
+		//	return termenv.String(s).Foreground(c).Bold().String()
+		//}
+
+		colour := func(s string, c termenv.Color) string {
+			return termenv.String(s).Foreground(c).String()
 		}
 
 		table := tablewriter.NewWriter(os.Stdout)
@@ -56,40 +60,40 @@ var listCmd = &cobra.Command{
 
 			if t.Complete {
 				// All green if complete
-				complete = bold("✔", green)
-				title = bold(t.Title, green)
-				due = bold(relativeDue, green)
+				complete = colour("✔", green)
+				title = colour(t.Title, green)
+				due = colour(relativeDue, green)
 				if t.Priority {
-					priority = bold("High", green)
+					priority = colour("High", green)
 				} else {
-					priority = bold("Normal", green)
+					priority = colour("Normal", green)
 				}
 			} else {
 				// Incomplete task
 
-				complete = bold("✘", red)
+				complete = colour("✘", red)
 
 				// Color title and due based on due date urgency
 				switch relativeDue {
 				case "Overdue":
-					title = bold(t.Title, red)
-					due = bold(relativeDue, red)
+					title = colour(t.Title, red)
+					due = colour(relativeDue, red)
 				case "Today":
-					title = bold(t.Title, orange)
-					due = bold(relativeDue, orange)
+					title = colour(t.Title, orange)
+					due = colour(relativeDue, orange)
 				case "Tomorrow":
-					title = bold(t.Title, yellow)
-					due = bold(relativeDue, yellow)
+					title = colour(t.Title, yellow)
+					due = colour(relativeDue, yellow)
 				default:
-					title = bold(t.Title, white)
-					due = bold(relativeDue, white)
+					title = colour(t.Title, grey)
+					due = colour(relativeDue, grey)
 				}
 
 				// Priority color
 				if t.Priority {
-					priority = bold("High", brightBlue)
+					priority = colour("High", brightBlue)
 				} else {
-					priority = bold("Normal", white)
+					priority = colour("Normal", grey)
 				}
 			}
 
