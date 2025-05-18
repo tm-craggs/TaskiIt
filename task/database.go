@@ -30,25 +30,6 @@ func InitDB() {
 	}
 }
 
-func GetAllTasks() ([]Task, error) {
-	rows, err := DB.Query("SELECT id, title, deadline, complete, priority FROM tasks")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var tasks []Task
-	for rows.Next() {
-		var t Task
-		err := rows.Scan(&t.ID, &t.Title, &t.Deadline, &t.Complete, &t.Priority)
-		if err != nil {
-			return nil, err
-		}
-		tasks = append(tasks, t)
-	}
-	return tasks, nil
-}
-
 func AddTask(t Task) error {
 	stmt := `INSERT INTO tasks (title, deadline, complete, priority) VALUES (?, ?, ?, ?)`
 	_, err := DB.Exec(stmt, t.Title, t.Deadline, t.Complete, t.Priority)
@@ -61,8 +42,19 @@ func DeleteTask(id int) error {
 }
 
 func DeleteAllTasks() error {
+	// remove all items from database
 	_, err := DB.Exec("DELETE FROM tasks")
-	return err
+	if err != nil {
+		return err
+	}
+
+	// reset auto-increment IDs to 1
+	_, err = DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'tasks'")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func CompleteTask(id int) error {
@@ -90,17 +82,20 @@ func GetTasks() ([]Task, error) {
 		SELECT id, title, deadline, complete, priority
 		FROM tasks
 		ORDER BY
-			complete ASC,              -- Incomplete first
 			priority DESC,             -- High priority first (only applies to incomplete now)
-			deadline IS NOT NULL DESC, -- Tasks with deadlines first
-			deadline ASC               -- Sooner deadlines first
+			deadline IS NOT NULL DESC -- Tasks with deadlines first
 	`
 
 	rows, err := DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+		}
+	}(rows)
 
 	var tasks []Task
 	for rows.Next() {
