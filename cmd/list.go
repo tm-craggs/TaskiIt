@@ -97,16 +97,22 @@ var listCmd = &cobra.Command{
 				}
 			}
 
-			table.Append([]string{
+			err := table.Append([]string{
 				fmt.Sprintf("%d", t.ID),
 				title,
 				due,
 				complete,
 				priority,
 			})
+			if err != nil {
+				return
+			}
 		}
 
-		table.Render()
+		err = table.Render()
+		if err != nil {
+			return
+		}
 	},
 }
 
