@@ -10,7 +10,7 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 
 - **Fast**: No login or loading times. Tasks are instantly accessible through simple commands.
 - **Minimal**: Shows only the information you need, nothing more. 
-- **Consise**: Commands are simple and quick to type. Flags allow for fine-grained control, but are kept to a minimum.
+- **Concise**: Commands are simple and quick to type. Flags allow for fine-grained control, but are kept to a minimum.
 - **Offline**: Everything stays on your machine and works without internet. No account needed.
 
 ### Contributions
