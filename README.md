@@ -2,17 +2,16 @@
 
 **TidyTask** is a simple Linux/Mac CLI tool for managing your to-do list, built with Go using Cobra.
 
-> This app is currently in active development and is not yet suitable for use.
+> This app is currently in development and is not yet ready for use.
 I'm working on it in my free time, with a first release targeted for July 2025.
 
-### Project Goals
-TidyTask is being built for users who want a no-nonsense way to manage their tasks from the terminal 
+### Design Philosophy
+TidyTask is designed for users who want a no-nonsense way to manage their tasks from the terminal 
 
 - **Fast**: No login or loading times. Tasks are instantly accessible through simple commands.
-- **Uncluttered**: Shows only the information you need, nothing more. 
-- **Simple**: No set-up. Just download and get started.
-- **Offline-First**: Everything stays on your machine and works without internet. No account needed.
-- **Powerful if needed**: Optional flags allow for more fine-grained control when needed.
+- **Minimal**: Shows only the information you need, nothing more. 
+- **Consise**: Commands are simple and quick to type. Flags allow for fine-grained control, but are kept to a minimum.
+- **Offline**: Everything stays on your machine and works without internet. No account needed.
 
 ### Contributions
 Contributions are encouraged and will be welcome after first release. See **Wishlist** for future ideas.
