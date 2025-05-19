@@ -31,4 +31,4 @@ Contributions are encouraged and will be welcome after first release. See **Wish
 - Add support for a configuration file, so that users can control colour scheme and column layout.
 - Add a basic Terminal User Interface, designed to enhance navigation without interfering with users who 
 prefer the core command line. 
-- Windows release
+- Flatpak release
