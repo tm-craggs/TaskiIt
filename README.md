@@ -8,7 +8,7 @@ I'm working on it in my free time, with a first release targeted for July 2025.
 ### Design Philosophy
 TidyTask is designed for users who want a no-nonsense way to manage their tasks from the terminal 
 
-- **Fast**: No login or loading times. Tasks are instantly accessible through simple commands.
+- **Fast**: No login or loading times. Tasks are instantly accessible through a small set of simple commands.
 - **Minimal**: Shows only the information you need, nothing more. 
 - **Concise**: Commands are simple and quick to type. Flags allow for fine-grained control, but are kept to a minimum.
 - **Offline**: Everything stays on your machine and works without internet. No account needed.
