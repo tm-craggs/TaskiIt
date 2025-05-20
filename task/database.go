@@ -121,6 +121,6 @@ func SetTitle(id int, newTitle string) error {
 }
 
 func TogglePriority(id int) error {
-	_, err := DB.Exec("UPDATE tasks SET priority = 1 - priority, id = ?", id)
+	_, err := DB.Exec("UPDATE tasks SET priority = NOT priority WHERE id = ?", id)
 	return err
 }
