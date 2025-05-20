@@ -21,7 +21,8 @@ Contributions are encouraged and will be welcome after first release. See **Wish
 - Add confirmation prompts for destructive tasks
 - Store empty dates as `NULL` , instead of empty strings
 - Add `completion_date` to tasks table
-- Use completion date to evaluate if due dates have been met 
+- Use completion date to evaluate if due dates have been met
+- Improve post-command output, detail changes made
 - Improve documentation and CLI `--help` output
 - General code and documentation cleanup
 - Package for release and ensure README has installation instructions for supported platforms
