@@ -18,7 +18,6 @@ Contributions are encouraged and will be welcome after first release. See **Wish
 
 ### Pre-Release TODO
 - Add `search` command
-- Add `edit` command
 - Add confirmation prompts for destructive tasks
 - Store empty dates as `NULL` , instead of empty strings
 - Add `completion_date` to tasks table
