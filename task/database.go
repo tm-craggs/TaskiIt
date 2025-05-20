@@ -109,3 +109,18 @@ func GetTasks() ([]Task, error) {
 
 	return tasks, nil
 }
+
+func SetDue(id int, newDate string) error {
+	_, err := DB.Exec("UPDATE tasks SET deadline = ? WHERE id = ?", newDate, id)
+	return err
+}
+
+func SetTitle(id int, newTitle string) error {
+	_, err := DB.Exec("UPDATE tasks SET title = ? WHERE id = ?", newTitle, id)
+	return err
+}
+
+func TogglePriority(id int) error {
+	_, err := DB.Exec("UPDATE tasks SET priority = 1 - priority, id = ?", id)
+	return err
+}
