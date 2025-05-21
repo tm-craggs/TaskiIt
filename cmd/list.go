@@ -87,7 +87,7 @@ var listCmd = &cobra.Command{
 		for _, t := range filteredTasks {
 			var complete, title, due, priority string
 
-			relativeDue := formatDeadline(t.Deadline)
+			relativeDue := formatDeadline(t.Due)
 
 			if t.Complete {
 				// All green if complete

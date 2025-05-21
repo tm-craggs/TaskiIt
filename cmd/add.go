@@ -28,7 +28,7 @@ var addCmd = &cobra.Command{
 
 		newTask := task.Task{
 			Title:    title,
-			Deadline: deadline,
+			Due:      deadline,
 			Complete: false,
 			Priority: *priority,
 		}
@@ -41,7 +41,7 @@ var addCmd = &cobra.Command{
 		fmt.Println("Task Created")
 		fmt.Println("ID:", newTask.ID)
 		fmt.Println("Title:", newTask.Title)
-		fmt.Println("Deadline:", newTask.Deadline)
+		fmt.Println("Due:", newTask.Due)
 		fmt.Println("Priority:", newTask.Priority)
 
 	},

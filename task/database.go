@@ -19,7 +19,7 @@ func InitDB() {
 	CREATE TABLE IF NOT EXISTS tasks (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title TEXT NOT NULL,
-		deadline TEXT,
+		due TEXT,
 		complete BOOLEAN NOT NULL DEFAULT false,
 		priority BOOLEAN NOT NULL DEFAULT false
 	);`
@@ -31,8 +31,8 @@ func InitDB() {
 }
 
 func AddTask(t Task) error {
-	stmt := `INSERT INTO tasks (title, deadline, complete, priority) VALUES (?, ?, ?, ?)`
-	_, err := DB.Exec(stmt, t.Title, t.Deadline, t.Complete, t.Priority)
+	stmt := `INSERT INTO tasks (title, due, complete, priority) VALUES (?, ?, ?, ?)`
+	_, err := DB.Exec(stmt, t.Title, t.Due, t.Complete, t.Priority)
 	return err
 }
 
@@ -102,7 +102,7 @@ func GetTasks() ([]Task, error) {
 	var tasks []Task
 	for rows.Next() {
 		var t Task
-		err := rows.Scan(&t.ID, &t.Title, &t.Deadline, &t.Complete, &t.Priority)
+		err := rows.Scan(&t.ID, &t.Title, &t.Due, &t.Complete, &t.Priority)
 		if err != nil {
 			return nil, err
 		}
@@ -113,7 +113,7 @@ func GetTasks() ([]Task, error) {
 }
 
 func SetDue(id int, newDate string) error {
-	_, err := DB.Exec("UPDATE tasks SET deadline = ? WHERE id = ?", newDate, id)
+	_, err := DB.Exec("UPDATE tasks SET due = ? WHERE id = ?", newDate, id)
 	return err
 }
 
