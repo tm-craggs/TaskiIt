@@ -157,12 +157,12 @@ func init() {
 
 }
 
-func formatDeadline(deadline string) string {
-	if deadline == "" {
+func formatDeadline(due string) string {
+	if due == "" {
 		return "None"
 	}
 
-	parsedDeadline, err := time.Parse("2006-01-02", deadline)
+	parsedDeadline, err := time.Parse("2006-01-02", due)
 	if err != nil {
 		return "Invalid date"
 	}

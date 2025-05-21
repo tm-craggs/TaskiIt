@@ -79,13 +79,13 @@ func ReopenAllTasks() error {
 
 func GetTasks() ([]Task, error) {
 	query := `
-		SELECT id, title, deadline, complete, priority
+		SELECT id, title, due, complete, priority
 		FROM tasks
 		ORDER BY
 		    complete ASC,
 			priority DESC,             -- High priority first (only applies to incomplete now)
-			deadline IS NOT NULL DESC, -- Tasks with deadlines first
-			deadline ASC
+			due IS NOT NULL DESC, -- Tasks with deadlines first
+			due ASC
 	`
 
 	rows, err := DB.Query(query)

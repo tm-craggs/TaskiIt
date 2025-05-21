@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	deadline string
+	due      string
 	priority = pflag.BoolP("priority", "p", false, "Mark task as high priority")
 )
 
@@ -28,7 +28,7 @@ var addCmd = &cobra.Command{
 
 		newTask := task.Task{
 			Title:    title,
-			Due:      deadline,
+			Due:      due,
 			Complete: false,
 			Priority: *priority,
 		}
@@ -48,7 +48,7 @@ var addCmd = &cobra.Command{
 }
 
 func init() {
-	addCmd.Flags().StringVarP(&deadline, "deadline", "d", "", "Set a deadline (e.g. 2025-05-14)")
+	addCmd.Flags().StringVarP(&due, "due", "d", "", "Set a due (e.g. 2025-05-14)")
 	addCmd.Flags().BoolVarP(priority, "priority", "p", false, "Mark the task as high priority")
 
 	rootCmd.AddCommand(addCmd)
