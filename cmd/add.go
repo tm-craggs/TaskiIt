@@ -38,7 +38,11 @@ var addCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Task added successfully")
+		fmt.Println("Task Created")
+		fmt.Println("ID:", newTask.ID)
+		fmt.Println("Title:", newTask.Title)
+		fmt.Println("Deadline:", newTask.Deadline)
+		fmt.Println("Priority:", newTask.Priority)
 
 	},
 }
