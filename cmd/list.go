@@ -11,6 +11,13 @@ import (
 	"github.com/tcraggs/TidyTask/task"
 )
 
+var (
+	filterPriority    bool
+	filterComplete    bool
+	filterNotComplete bool
+	filterNotPriority bool
+)
+
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all tasks",
@@ -53,7 +60,31 @@ var listCmd = &cobra.Command{
 		table := tablewriter.NewWriter(os.Stdout)
 		table.Header([]string{"ID", "Title", "Due", "Complete", "Priority"})
 
+		// put tasks through filters
+		var filteredTasks []task.Task
+
 		for _, t := range tasks {
+			if filterPriority && !t.Priority {
+				continue
+			}
+			if filterComplete && !t.Complete {
+				continue
+			}
+			if filterNotComplete && t.Complete {
+				continue
+			}
+			if filterNotPriority && t.Priority {
+				continue
+			}
+			filteredTasks = append(filteredTasks, t)
+		}
+
+		if len(filteredTasks) == 0 {
+			fmt.Println("No tasks found")
+			return
+		}
+
+		for _, t := range filteredTasks {
 			var complete, title, due, priority string
 
 			relativeDue := formatDeadline(t.Deadline)
@@ -118,6 +149,12 @@ var listCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+
+	listCmd.Flags().BoolVarP(&filterPriority, "priority", "p", false, "Filter by priority")
+	listCmd.Flags().BoolVarP(&filterComplete, "complete", "c", false, "Filter by complete")
+	listCmd.Flags().BoolVarP(&filterNotComplete, "incomplete", "i", false, "Filter by not incomplete")
+	listCmd.Flags().BoolVarP(&filterNotPriority, "normal-priority", "n", false, "Filter by normal priority")
+
 }
 
 func formatDeadline(deadline string) string {
