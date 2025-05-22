@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
+	"github.com/tcraggs/TidyTask/util"
 	"strconv"
 )
 
@@ -13,6 +14,23 @@ var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove a task",
 	Long:  `Long goes here`,
+
+	// confirmation for delete as pre-run
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if removeAll {
+			if !util.ConfirmAction("Remove all tasks ?") {
+				cmd.SilenceUsage = true
+				return fmt.Errorf("aborted by user")
+			}
+		} else {
+			if !util.ConfirmAction("Remove task " + args[0] + "?") {
+				cmd.SilenceUsage = true
+				return fmt.Errorf("aborted by user")
+			}
+		}
+		return nil
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// code for --all flag
