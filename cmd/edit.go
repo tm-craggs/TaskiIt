@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
+	"github.com/tcraggs/TidyTask/util"
 	"strconv"
 )
 
@@ -21,6 +22,11 @@ var editCmd = &cobra.Command{
 		err := task.BackupDB()
 		if err != nil {
 			return err
+		}
+
+		if !util.ConfirmAction("Confirm Edit?") {
+			cmd.SilenceUsage = true
+			return fmt.Errorf("aborted by user")
 		}
 
 		return nil
