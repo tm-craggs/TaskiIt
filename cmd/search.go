@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
+	"github.com/tcraggs/TidyTask/util"
 )
 
 var searchCmd = &cobra.Command{
@@ -12,7 +13,7 @@ var searchCmd = &cobra.Command{
 	Long:  `Long description goes here`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		taskArr, _ := task.SearchTasks("hello", false, true, false)
+		tasks, _ := task.SearchTasks("hello", false, true, false)
 
 		keyword := args[0]
 
@@ -20,21 +21,33 @@ var searchCmd = &cobra.Command{
 		searchTitle, _ := cmd.Flags().GetBool("title")
 		searchDue, _ := cmd.Flags().GetBool("due")
 
-		taskArr, err := task.SearchTasks(keyword, searchID, searchTitle, searchDue)
+		tasks, err := task.SearchTasks(keyword, searchID, searchTitle, searchDue)
 		if err != nil {
 			fmt.Println("Error searching terms", err)
 		}
 
-		for _, task := range taskArr {
-			fmt.Println(task)
-		}
+		filterPriority, _ := cmd.Flags().GetBool("priority")
+		filterComplete, _ := cmd.Flags().GetBool("complete")
+		filterNotComplete, _ := cmd.Flags().GetBool("incomplete")
+		filterNotPriority, _ := cmd.Flags().GetBool("normal-priority")
+
+		util.PrintTasks(util.FilterTasks(tasks, filterComplete, filterPriority, filterNotComplete, filterNotPriority))
 
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(searchCmd)
+
+	// target flags
 	searchCmd.Flags().BoolP("id", "i", false, "Search task by ID")
 	searchCmd.Flags().BoolP("title", "t", false, "Search task by title")
+	searchCmd.Flags().BoolP("due", "d", false, "Search task by due")
+
+	// filter flags
+	searchCmd.Flags().BoolP("complete", "c", false, "Search only complete tasks")
+	searchCmd.Flags().BoolP("incomplete", "u", false, "Search only not complete tasks")
 	searchCmd.Flags().BoolP("priority", "p", false, "Search task by priority")
+	searchCmd.Flags().BoolP("not-priority", "n", false, "Search task by not-priority")
+
 }
