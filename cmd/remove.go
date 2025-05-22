@@ -28,6 +28,12 @@ var removeCmd = &cobra.Command{
 				return fmt.Errorf("aborted by user")
 			}
 		}
+
+		err := task.BackupDB()
+		if err != nil {
+			return err
+		}
+
 		return nil
 	},
 

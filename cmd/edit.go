@@ -17,6 +17,14 @@ var editCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "add a new task to your to-do list",
 	Long:  `Long description goes here`,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		err := task.BackupDB()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("Please enter a task name")

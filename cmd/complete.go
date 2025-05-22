@@ -13,6 +13,14 @@ var completeCmd = &cobra.Command{
 	Use:   "complete",
 	Short: "Complete a task",
 	Long:  `Long goes here`,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		err := task.BackupDB()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// code for --all flag

@@ -2,8 +2,10 @@ package task
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -178,4 +180,33 @@ func SearchTasks(keyword string, searchID bool, searchTitle bool, searchDue bool
 
 	return tasks, nil
 
+}
+
+func BackupDB() error {
+	input, err := os.ReadFile("tasks.db")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile("tasks.db.bak", input, 0644)
+}
+
+func RestoreBackup() error {
+	input, err := os.ReadFile("tasks.db.bak")
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile("tasks.db", input, 0644)
+	if err != nil {
+		return err
+	}
+
+	// Delete the backup file after successful restore
+	err = os.Remove("tasks.db.bak")
+	if err != nil {
+		// Not a fatal error, but you might want to log it
+		fmt.Println("Warning: failed to delete backup file:", err)
+	}
+
+	return nil
 }
