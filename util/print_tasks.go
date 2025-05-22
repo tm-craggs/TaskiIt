@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func PrintTasks(tasks []task.Task, filterPriority bool, filterComplete bool, filterNotComplete bool, filterNotPriority bool) {
+func PrintTasks(tasks []task.Task) {
 
 	// return if no tasks
 	if len(tasks) == 0 {
@@ -40,31 +40,12 @@ func PrintTasks(tasks []task.Task, filterPriority bool, filterComplete bool, fil
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Header([]string{"ID", "Title", "Due", "Complete", "Priority"})
 
-	// put tasks through filters
-	var filteredTasks []task.Task
-
-	for _, t := range tasks {
-		if filterPriority && !t.Priority {
-			continue
-		}
-		if filterComplete && !t.Complete {
-			continue
-		}
-		if filterNotComplete && t.Complete {
-			continue
-		}
-		if filterNotPriority && t.Priority {
-			continue
-		}
-		filteredTasks = append(filteredTasks, t)
-	}
-
-	if len(filteredTasks) == 0 {
+	if len(tasks) == 0 {
 		fmt.Println("No tasks found")
 		return
 	}
 
-	for _, t := range filteredTasks {
+	for _, t := range tasks {
 		var complete, title, due, priority string
 
 		relativeDue := formatDeadline(t.Due)

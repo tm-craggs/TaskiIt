@@ -24,7 +24,7 @@ var listCmd = &cobra.Command{
 			return
 		}
 
-		util.PrintTasks(tasks, filterPriority, filterComplete, filterNotComplete, filterNotPriority)
+		util.PrintTasks(util.FilterTasks(tasks, filterComplete, filterPriority, filterNotComplete, filterNotPriority))
 
 	},
 }
