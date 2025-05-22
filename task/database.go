@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"strings"
 )
 
 var DB *sql.DB
@@ -96,6 +97,8 @@ func GetTasks() ([]Task, error) {
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
+			log.Printf("Failed to close rows: %v", err)
+			return
 		}
 	}(rows)
 
@@ -125,4 +128,54 @@ func SetTitle(id int, newTitle string) error {
 func TogglePriority(id int) error {
 	_, err := DB.Exec("UPDATE tasks SET priority = NOT priority WHERE id = ?", id)
 	return err
+}
+
+func SearchTasks(keyword string, searchID bool, searchTitle bool, searchDue bool) ([]Task, error) {
+	var conditions []string
+	var args []interface{}
+
+	if searchID {
+		conditions = append(conditions, "CAST(id AS TEXT) LIKE ?")
+		args = append(args, "%"+keyword+"%")
+	}
+	if searchTitle {
+		conditions = append(conditions, "title LIKE ?")
+		args = append(args, "%"+keyword+"%")
+	}
+	if searchDue {
+		conditions = append(conditions, "due LIKE ?")
+		args = append(args, "%"+keyword+"%")
+	}
+
+	query := `
+		SELECT id, title, due, complete, priority
+		FROM tasks
+		WHERE ` + strings.Join(conditions, " OR ") + `
+		ORDER BY complete ASC, priority DESC, due IS NOT NULL DESC, due ASC`
+
+	rows, err := DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Printf("Failed to close rows: %v", err)
+			return
+		}
+	}(rows)
+
+	var tasks []Task
+	for rows.Next() {
+		var t Task
+		err := rows.Scan(&t.ID, &t.Title, &t.Due, &t.Complete, &t.Priority)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, t)
+	}
+
+	return tasks, nil
+
 }
