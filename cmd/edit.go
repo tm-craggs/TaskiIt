@@ -65,7 +65,7 @@ var editCmd = &cobra.Command{
 
 func init() {
 	editCmd.Flags().StringVarP(&editDue, "due", "d", "", "Set a due date (e.g. 2025-05-14)")
-	editCmd.Flags().BoolVarP(priority, "priority", "p", false, "Mark the task as high priority")
+	editCmd.Flags().BoolP("priority", "p", false, "Mark the task as high priority")
 	editCmd.Flags().StringVarP(&editTitle, "title", "t", "", "Set a task title")
 
 	rootCmd.AddCommand(editCmd)

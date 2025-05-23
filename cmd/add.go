@@ -3,13 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/tcraggs/TidyTask/task"
-)
-
-var (
-	due      string
-	priority = pflag.BoolP("priority", "p", false, "Mark task as high priority")
 )
 
 // addCmd represents the add command
@@ -32,6 +26,8 @@ var addCmd = &cobra.Command{
 			return
 		}
 
+		due, _ := cmd.Flags().GetString("due")
+		priority, _ := cmd.Flags().GetBool("priority")
 		// task title is taken in as args
 		title := args[0]
 
@@ -39,7 +35,7 @@ var addCmd = &cobra.Command{
 			Title:    title,
 			Due:      due,
 			Complete: false,
-			Priority: *priority,
+			Priority: priority,
 		}
 
 		if err := task.AddTask(newTask); err != nil {
@@ -57,8 +53,8 @@ var addCmd = &cobra.Command{
 }
 
 func init() {
-	addCmd.Flags().StringVarP(&due, "due", "d", "", "Set a due (e.g. 2025-05-14)")
-	addCmd.Flags().BoolVarP(priority, "priority", "p", false, "Mark the task as high priority")
+	addCmd.Flags().StringP("due", "due", "d", "Set a due (e.g. 2025-05-14)")
+	addCmd.Flags().BoolP("priority", "p", false, "Mark the task as high priority")
 
 	rootCmd.AddCommand(addCmd)
 
