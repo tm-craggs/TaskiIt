@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 var DB *sql.DB
@@ -62,22 +63,24 @@ func DeleteAllTasks() error {
 }
 
 func CompleteTask(id int) error {
-	_, err := DB.Exec("UPDATE tasks SET complete = 1 WHERE id = ?", id)
+	currentDate := time.Now().Format("2006-01-02")
+	_, err := DB.Exec("UPDATE tasks SET complete = 1, complete_date = ? WHERE id = ?", currentDate, id)
 	return err
 }
 
 func CompleteAllTasks() error {
-	_, err := DB.Exec("UPDATE tasks SET complete = 1")
+	currentDate := time.Now().Format("2006-01-02")
+	_, err := DB.Exec("UPDATE tasks SET complete = 1, complete_date =?", currentDate)
 	return err
 }
 
 func ReopenTask(id int) error {
-	_, err := DB.Exec("UPDATE tasks SET complete = 0 WHERE id = ?", id)
+	_, err := DB.Exec("UPDATE tasks SET complete = 0, complete_date = NULL WHERE id = ?", id)
 	return err
 }
 
 func ReopenAllTasks() error {
-	_, err := DB.Exec("UPDATE tasks SET complete = 0")
+	_, err := DB.Exec("UPDATE tasks SET complete = 0, complete_date = NULL")
 	return err
 }
 
