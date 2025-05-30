@@ -64,13 +64,31 @@ func DeleteAllTasks() error {
 
 func CompleteTask(id int) error {
 	currentDate := time.Now().Format("2006-01-02")
-	_, err := DB.Exec("UPDATE tasks SET complete = 1, complete_date = ? WHERE id = ?", currentDate, id)
+	_, err := DB.Exec(`
+		UPDATE tasks
+		SET complete = 1,
+		    complete_date = CASE
+		        WHEN complete_date IS NULL THEN ?
+		        ELSE complete_date
+		    END
+		WHERE id = ?
+	`, currentDate, id)
+
 	return err
 }
 
 func CompleteAllTasks() error {
 	currentDate := time.Now().Format("2006-01-02")
-	_, err := DB.Exec("UPDATE tasks SET complete = 1, complete_date =?", currentDate)
+
+	_, err := DB.Exec(`
+		UPDATE tasks
+		SET complete = 1,
+		    complete_date = CASE
+		        WHEN complete_date IS NULL THEN ?
+		        ELSE complete_date
+		    END
+	`, currentDate)
+
 	return err
 }
 
