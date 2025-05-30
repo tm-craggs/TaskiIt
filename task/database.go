@@ -24,7 +24,8 @@ func InitDB() {
 		title TEXT NOT NULL,
 		due TEXT,
 		complete BOOLEAN NOT NULL DEFAULT false,
-		priority BOOLEAN NOT NULL DEFAULT false
+		priority BOOLEAN NOT NULL DEFAULT false,
+		complete_date TEXT          
 	);`
 
 	_, err = DB.Exec(createTable)

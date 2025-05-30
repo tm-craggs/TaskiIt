@@ -53,7 +53,7 @@ var addCmd = &cobra.Command{
 }
 
 func init() {
-	addCmd.Flags().StringP("due", "due", "d", "Set a due (e.g. 2025-05-14)")
+	addCmd.Flags().StringP("due", "d", "", "Set a due (e.g. 2025-05-14)")
 	addCmd.Flags().BoolP("priority", "p", false, "Mark the task as high priority")
 
 	rootCmd.AddCommand(addCmd)
