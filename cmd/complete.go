@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-var completeAll bool
-
 var completeCmd = &cobra.Command{
 	Use:   "complete",
 	Short: "Complete a task",
@@ -22,6 +20,12 @@ var completeCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+
+		var completeAll, err = cmd.Flags().GetBool("all")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
 		// code for --all flag
 		if completeAll {
@@ -64,6 +68,6 @@ var completeCmd = &cobra.Command{
 }
 
 func init() {
-	completeCmd.Flags().BoolVarP(&completeAll, "all", "a", false, "Complete all tasks")
+	completeCmd.Flags().BoolP("all", "a", false, "Complete all tasks")
 	rootCmd.AddCommand(completeCmd)
 }

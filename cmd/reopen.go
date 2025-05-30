@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-var reopenAll bool
-
 var reopenCmd = &cobra.Command{
 	Use:   "reopen",
 	Short: "Reopen a completed task",
@@ -22,6 +20,11 @@ var reopenCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+
+		reopenAll, err := cmd.Flags().GetBool("all")
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		// code for --all flag
 		if reopenAll {
@@ -64,6 +67,6 @@ var reopenCmd = &cobra.Command{
 }
 
 func init() {
-	reopenCmd.Flags().BoolVarP(&completeAll, "all", "a", false, "Reopen all tasks")
+	reopenCmd.Flags().BoolP("all", "a", false, "Reopen all tasks")
 	rootCmd.AddCommand(reopenCmd)
 }

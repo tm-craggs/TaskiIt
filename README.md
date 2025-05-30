@@ -17,7 +17,6 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 Contributions are encouraged and will be welcome after the first release. See **Wishlist** for future ideas.
 
 ### Pre-Release TODO
-- Add confirmation prompts for destructive tasks
 - Store empty dates as `NULL` , instead of empty strings
 - Add `completion_date` to task table
 - Use completion date to evaluate if due dates have been met
@@ -30,3 +29,4 @@ Contributions are encouraged and will be welcome after the first release. See **
 - Add support for a configuration file so that users can control the colour scheme and column layout.
 - Add a basic Terminal User Interface, designed to enhance navigation without interfering with users who 
 prefer the core command line.
+- Implement an action log table and multi-level undo

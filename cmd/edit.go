@@ -8,11 +8,6 @@ import (
 	"strconv"
 )
 
-var (
-	editDue   string
-	editTitle string
-)
-
 // addCmd represents the add command
 var editCmd = &cobra.Command{
 	Use:   "edit",
@@ -34,6 +29,18 @@ var editCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("Please enter a task name")
+			return
+		}
+
+		editDue, err := cmd.Flags().GetString("due")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		editTitle, err := cmd.Flags().GetString("due")
+		if err != nil {
+			fmt.Println(err)
 			return
 		}
 
@@ -64,9 +71,9 @@ var editCmd = &cobra.Command{
 }
 
 func init() {
-	editCmd.Flags().StringVarP(&editDue, "due", "d", "", "Set a due date (e.g. 2025-05-14)")
+	editCmd.Flags().StringP("due", "d", "", "Set a due date (e.g. 2025-05-14)")
 	editCmd.Flags().BoolP("priority", "p", false, "Mark the task as high priority")
-	editCmd.Flags().StringVarP(&editTitle, "title", "t", "", "Set a task title")
+	editCmd.Flags().StringP("title", "t", "", "Set a task title")
 
 	rootCmd.AddCommand(editCmd)
 

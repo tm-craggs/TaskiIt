@@ -8,8 +8,6 @@ import (
 	"strconv"
 )
 
-var removeAll bool
-
 var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove a task",
@@ -17,6 +15,12 @@ var removeCmd = &cobra.Command{
 
 	// confirmation for delete as pre-run
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+
+		removeAll, err := cmd.Flags().GetBool("all")
+		if err != nil {
+			return err
+		}
+
 		if removeAll {
 			if !util.ConfirmAction("Remove all tasks ?") {
 				cmd.SilenceUsage = true
@@ -29,7 +33,7 @@ var removeCmd = &cobra.Command{
 			}
 		}
 
-		err := task.BackupDB()
+		err = task.BackupDB()
 		if err != nil {
 			return err
 		}
@@ -38,6 +42,11 @@ var removeCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
+
+		removeAll, err := cmd.Flags().GetBool("all")
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		// code for --all flag
 		if removeAll {
@@ -80,6 +89,6 @@ var removeCmd = &cobra.Command{
 }
 
 func init() {
-	removeCmd.Flags().BoolVarP(&removeAll, "all", "a", false, "Remove all tasks")
+	removeCmd.Flags().BoolP("all", "a", false, "Remove all tasks")
 	rootCmd.AddCommand(removeCmd)
 }
