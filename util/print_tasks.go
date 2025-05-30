@@ -132,6 +132,6 @@ func formatDeadline(due string) string {
 	case days <= 6:
 		return parsedDeadline.Weekday().String()
 	default:
-		return parsedDeadline.Format("2 Jan 2006")
+		return parsedDeadline.Format("2006-01-02")
 	}
 }
