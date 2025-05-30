@@ -28,8 +28,8 @@ var searchCmd = &cobra.Command{
 
 		filterPriority, _ := cmd.Flags().GetBool("priority")
 		filterComplete, _ := cmd.Flags().GetBool("complete")
-		filterNotComplete, _ := cmd.Flags().GetBool("incomplete")
-		filterNotPriority, _ := cmd.Flags().GetBool("normal-priority")
+		filterNotComplete, _ := cmd.Flags().GetBool("open")
+		filterNotPriority, _ := cmd.Flags().GetBool("normal")
 
 		util.PrintTasks(util.FilterTasks(tasks, filterComplete, filterPriority, filterNotComplete, filterNotPriority))
 
@@ -46,8 +46,8 @@ func init() {
 
 	// filter flags
 	searchCmd.Flags().BoolP("complete", "c", false, "Search only complete tasks")
-	searchCmd.Flags().BoolP("incomplete", "u", false, "Search only not complete tasks")
+	searchCmd.Flags().BoolP("open", "o", false, "Search only open tasks")
 	searchCmd.Flags().BoolP("priority", "p", false, "Search task by priority")
-	searchCmd.Flags().BoolP("not-priority", "n", false, "Search task by not-priority")
+	searchCmd.Flags().BoolP("normal", "n", false, "Search normal priority tasks")
 
 }
