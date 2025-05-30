@@ -17,8 +17,8 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 Contributions are encouraged and will be welcome after the first release. See **Wishlist** for future ideas.
 
 ### Pre-Release TODO
-- Add `completion_date` to task table
 - Use completion date to evaluate if due dates have been met
+- Guard against improper command formatting
 - Improve post-command output, detail changes made
 - Improve documentation and CLI `--help` output
 - General code and documentation clean-up
