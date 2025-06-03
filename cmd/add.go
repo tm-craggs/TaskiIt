@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
+	"github.com/tcraggs/TidyTask/util"
 )
 
 // addCmd represents the add command
@@ -30,6 +31,10 @@ var addCmd = &cobra.Command{
 		priority, _ := cmd.Flags().GetBool("priority")
 		// task title is taken in as args
 		title := args[0]
+
+		if due != "" {
+			util.VerifyDate(due)
+		}
 
 		newTask := task.Task{
 			Title:    title,

@@ -60,6 +60,7 @@ var editCmd = &cobra.Command{
 		}
 
 		if cmd.Flags().Changed("due") {
+			util.VerifyDate(editDue)
 			if err := task.SetDue(id, editDue); err != nil {
 				fmt.Println(err)
 			}
