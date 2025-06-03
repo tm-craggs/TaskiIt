@@ -10,28 +10,19 @@ import (
 )
 
 func PrintTasks(tasks []task.Task) {
-
-	// return if no tasks
 	if len(tasks) == 0 {
 		fmt.Println("No tasks found")
 		return
 	}
 
-	// Setup termenv profile for colors
 	p := termenv.ColorProfile()
 
-	// Define colors (using RGB for more precise control)
-	green := p.Color("#00FF00")       // bright green
-	red := p.Color("#FF5555")         // light red
-	brightBlue := p.Color("#35c5ff ") // bright blue
-	orange := p.Color("#FF8000")      // orange
-	yellow := p.Color("#FFFF00")      // yellow
+	green := p.Color("#00FF00")
+	red := p.Color("#FF5555")
+	brightBlue := p.Color("#35c5ff")
+	orange := p.Color("#FF8000")
+	yellow := p.Color("#FFFF00")
 	grey := p.Color("#FFFFFF")
-
-	// Helper for bold text
-	//bold := func(s string, c termenv.Color) string {
-	//	return termenv.String(s).Foreground(c).Bold().String()
-	//}
 
 	colour := func(s string, c termenv.Color) string {
 		return termenv.String(s).Foreground(c).String()
@@ -40,32 +31,58 @@ func PrintTasks(tasks []task.Task) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Header([]string{"ID", "Title", "Due", "Complete", "Priority"})
 
-	if len(tasks) == 0 {
-		fmt.Println("No tasks found")
-		return
-	}
-
 	for _, t := range tasks {
 		var complete, title, due, priority string
 
-		relativeDue := formatDeadline(t.Due)
-
 		if t.Complete {
-			// All green if complete
 			complete = colour("✔", green)
 			title = colour(t.Title, green)
-			due = colour(relativeDue, green)
+
+			if t.Due == "" {
+				due = colour("Met", green)
+			} else {
+				dueDate, err1 := time.Parse("2006-01-02", t.Due)
+				var completeDate time.Time
+				var err2 error
+
+				if t.CompleteDate.Valid {
+					completeDate, err2 = time.Parse("2006-01-02", t.CompleteDate.String)
+				} else {
+					err2 = fmt.Errorf("no complete date")
+				}
+
+				if err1 == nil && err2 == nil {
+					diff := int(completeDate.Sub(dueDate).Hours() / 24)
+					dayLabel := func(n int) string {
+						if n == 1 {
+							return "day"
+						}
+						return "days"
+					}
+
+					switch {
+					case diff == 0:
+						due = "Met: On Time"
+					case diff < 0:
+						due = fmt.Sprintf("Met: %d %s early", -diff, dayLabel(-diff))
+					default:
+						due = fmt.Sprintf("Missed: %d %s late", diff, dayLabel(diff))
+					}
+					due = colour(due, green)
+				} else {
+					due = colour(t.Due, green)
+				}
+			}
+
 			if t.Priority {
 				priority = colour("High", green)
 			} else {
 				priority = colour("Normal", green)
 			}
 		} else {
-			// Incomplete task
-
+			relativeDue := formatDeadline(t.Due)
 			complete = colour("✘", red)
 
-			// Color title and due based on due date urgency
 			switch relativeDue {
 			case "Overdue":
 				title = colour(t.Title, red)
@@ -81,7 +98,6 @@ func PrintTasks(tasks []task.Task) {
 				due = colour(relativeDue, grey)
 			}
 
-			// Priority color
 			if t.Priority {
 				priority = colour("High", brightBlue)
 			} else {
@@ -89,40 +105,35 @@ func PrintTasks(tasks []task.Task) {
 			}
 		}
 
-		err := table.Append([]string{
+		if err := table.Append([]string{
 			fmt.Sprintf("%d", t.ID),
 			title,
 			due,
 			complete,
 			priority,
-		})
-		if err != nil {
+		}); err != nil {
 			return
 		}
 	}
 
-	err := table.Render()
-	if err != nil {
+	if err := table.Render(); err != nil {
 		return
 	}
-
 }
 
 func formatDeadline(due string) string {
 	if due == "" {
 		return "None"
 	}
-
 	parsedDeadline, err := time.Parse("2006-01-02", due)
 	if err != nil {
 		return "Invalid date"
 	}
-
 	today := time.Now().Truncate(24 * time.Hour)
 	parsedDeadline = parsedDeadline.Truncate(24 * time.Hour)
-	difference := parsedDeadline.Sub(today)
+	days := int(parsedDeadline.Sub(today).Hours() / 24)
 
-	switch days := int(difference.Hours() / 24); {
+	switch {
 	case days < 0:
 		return "Overdue"
 	case days == 0:

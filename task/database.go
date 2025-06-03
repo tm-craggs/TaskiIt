@@ -36,7 +36,7 @@ func InitDB() {
 }
 
 func AddTask(t Task) error {
-	stmt := `INSERT INTO tasks (title, due, complete, priority) VALUES (?, ?, ?, ?)`
+	stmt := `INSERT INTO tasks (title, due, complete, priority, complete_date) VALUES (?, ?, ?, ?, NULL)`
 	_, err := DB.Exec(stmt, t.Title, t.Due, t.Complete, t.Priority)
 	return err
 }
@@ -104,7 +104,7 @@ func ReopenAllTasks() error {
 
 func GetTasks() ([]Task, error) {
 	query := `
-		SELECT id, title, due, complete, priority
+		SELECT id, title, due, complete, priority, complete_date
 		FROM tasks
 		ORDER BY
 		    complete ASC,
@@ -129,7 +129,7 @@ func GetTasks() ([]Task, error) {
 	var tasks []Task
 	for rows.Next() {
 		var t Task
-		err := rows.Scan(&t.ID, &t.Title, &t.Due, &t.Complete, &t.Priority)
+		err := rows.Scan(&t.ID, &t.Title, &t.Due, &t.Complete, &t.Priority, &t.CompleteDate)
 		if err != nil {
 			return nil, err
 		}
