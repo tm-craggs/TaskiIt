@@ -34,6 +34,6 @@ func init() {
 
 	listCmd.Flags().BoolP("priority", "p", false, "Filter by priority")
 	listCmd.Flags().BoolP("complete", "c", false, "Filter by complete")
-	listCmd.Flags().BoolP("incomplete", "o", false, "Filter by open task")
+	listCmd.Flags().BoolP("open", "o", false, "Filter by open task")
 	listCmd.Flags().BoolP("normal", "n", false, "Filter by normal priority")
 }
