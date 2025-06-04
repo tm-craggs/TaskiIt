@@ -39,7 +39,7 @@ func PrintTasks(tasks []task.Task) {
 			title = colour(t.Title, green)
 
 			if t.Due == "" {
-				due = colour("Met", green)
+				due = colour("Met: No due", green)
 			} else {
 				dueDate, err1 := time.Parse("2006-01-02", t.Due)
 				var completeDate time.Time
@@ -52,21 +52,16 @@ func PrintTasks(tasks []task.Task) {
 				}
 
 				if err1 == nil && err2 == nil {
-					diff := int(completeDate.Sub(dueDate).Hours() / 24)
-					dayLabel := func(n int) string {
-						if n == 1 {
-							return "day"
-						}
-						return "days"
-					}
+					diff := int(completeDate.Truncate(24*time.Hour).Sub(dueDate.Truncate(24*time.Hour)).Hours() / 24)
+					diffText := dateDiff(dueDate, completeDate)
 
 					switch {
 					case diff == 0:
 						due = "Met: On Time"
 					case diff < 0:
-						due = fmt.Sprintf("Met: %d %s early", -diff, dayLabel(-diff))
+						due = fmt.Sprintf("Met: %s early", diffText)
 					default:
-						due = fmt.Sprintf("Missed: %d %s late", diff, dayLabel(diff))
+						due = fmt.Sprintf("Missed: %s late", diffText)
 					}
 					due = colour(due, green)
 				} else {
@@ -83,19 +78,30 @@ func PrintTasks(tasks []task.Task) {
 			relativeDue := formatDeadline(t.Due)
 			complete = colour("✘", red)
 
-			switch relativeDue {
-			case "Overdue":
+			// this code is horrible and needs to be nuked
+			// TODO: Append overdue with time in the dateDiff function
+
+			if relativeDue == "Overdue" {
+				dueDate, err := time.Parse("2006-01-02", t.Due)
+				if err == nil {
+					diffText := dateDiff(dueDate, time.Now())
+					due = colour(fmt.Sprintf("Overdue: %s", diffText), red)
+				} else {
+					due = colour(relativeDue, red)
+				}
 				title = colour(t.Title, red)
-				due = colour(relativeDue, red)
-			case "Today":
-				title = colour(t.Title, orange)
-				due = colour(relativeDue, orange)
-			case "Tomorrow":
-				title = colour(t.Title, yellow)
-				due = colour(relativeDue, yellow)
-			default:
-				title = colour(t.Title, grey)
-				due = colour(relativeDue, grey)
+			} else {
+				switch relativeDue {
+				case "Today":
+					title = colour(t.Title, orange)
+					due = colour(relativeDue, orange)
+				case "Tomorrow":
+					title = colour(t.Title, yellow)
+					due = colour(relativeDue, yellow)
+				default:
+					title = colour(t.Title, grey)
+					due = colour(relativeDue, grey)
+				}
 			}
 
 			if t.Priority {
@@ -116,9 +122,7 @@ func PrintTasks(tasks []task.Task) {
 		}
 	}
 
-	if err := table.Render(); err != nil {
-		return
-	}
+	_ = table.Render()
 }
 
 func formatDeadline(due string) string {
