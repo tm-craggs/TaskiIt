@@ -2,11 +2,26 @@ package util
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/muesli/termenv"
 	"github.com/olekukonko/tablewriter"
 	"github.com/tcraggs/TidyTask/task"
-	"os"
-	"time"
+)
+
+var (
+	p            = termenv.ColorProfile()
+	green        = p.Color("#00FF00")
+	red          = p.Color("#FF5555")
+	brightBlue   = p.Color("#35c5ff")
+	orange       = p.Color("#FF8000")
+	yellow       = p.Color("#FFFF00")
+	grey         = p.Color("#FFFFFF")
+	colorize     = func(s string, c termenv.Color) string { return termenv.String(s).Foreground(c).String() }
+	truncateTime = func(t time.Time) time.Time { return t.Truncate(24 * time.Hour) }
 )
 
 func PrintTasks(tasks []task.Task) {
@@ -15,100 +30,18 @@ func PrintTasks(tasks []task.Task) {
 		return
 	}
 
-	p := termenv.ColorProfile()
-
-	green := p.Color("#00FF00")
-	red := p.Color("#FF5555")
-	brightBlue := p.Color("#35c5ff")
-	orange := p.Color("#FF8000")
-	yellow := p.Color("#FFFF00")
-	grey := p.Color("#FFFFFF")
-
-	colour := func(s string, c termenv.Color) string {
-		return termenv.String(s).Foreground(c).String()
-	}
-
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Header([]string{"ID", "Title", "Due", "Complete", "Priority"})
 
 	for _, t := range tasks {
-		var complete, title, due, priority string
+		var title, due, complete, priority string
 
 		if t.Complete {
-			complete = colour("✔", green)
-			title = colour(t.Title, green)
-
-			if t.Due == "" {
-				due = colour("Met: No due", green)
-			} else {
-				dueDate, err1 := time.Parse("2006-01-02", t.Due)
-				var completeDate time.Time
-				var err2 error
-
-				if t.CompleteDate.Valid {
-					completeDate, err2 = time.Parse("2006-01-02", t.CompleteDate.String)
-				} else {
-					err2 = fmt.Errorf("no complete date")
-				}
-
-				if err1 == nil && err2 == nil {
-					diff := int(completeDate.Truncate(24*time.Hour).Sub(dueDate.Truncate(24*time.Hour)).Hours() / 24)
-					diffText := dateDiff(dueDate, completeDate)
-
-					switch {
-					case diff == 0:
-						due = "Met: On Time"
-					case diff < 0:
-						due = fmt.Sprintf("Met: %s early", diffText)
-					default:
-						due = fmt.Sprintf("Missed: %s late", diffText)
-					}
-					due = colour(due, green)
-				} else {
-					due = colour(t.Due, green)
-				}
-			}
-
-			if t.Priority {
-				priority = colour("High", green)
-			} else {
-				priority = colour("Normal", green)
-			}
+			complete, title, due = formatCompletedTask(t)
+			priority = formatPriority(t.Priority, green)
 		} else {
-			relativeDue := formatDeadline(t.Due)
-			complete = colour("✘", red)
-
-			// this code is horrible and needs to be nuked
-			// TODO: Append overdue with time in the dateDiff function
-
-			if relativeDue == "Overdue" {
-				dueDate, err := time.Parse("2006-01-02", t.Due)
-				if err == nil {
-					diffText := dateDiff(dueDate, time.Now())
-					due = colour(fmt.Sprintf("Overdue: %s", diffText), red)
-				} else {
-					due = colour(relativeDue, red)
-				}
-				title = colour(t.Title, red)
-			} else {
-				switch relativeDue {
-				case "Today":
-					title = colour(t.Title, orange)
-					due = colour(relativeDue, orange)
-				case "Tomorrow":
-					title = colour(t.Title, yellow)
-					due = colour(relativeDue, yellow)
-				default:
-					title = colour(t.Title, grey)
-					due = colour(relativeDue, grey)
-				}
-			}
-
-			if t.Priority {
-				priority = colour("High", brightBlue)
-			} else {
-				priority = colour("Normal", grey)
-			}
+			complete, title, due = formatIncompleteTask(t)
+			priority = formatPriority(t.Priority, brightBlue)
 		}
 
 		if err := table.Append([]string{
@@ -122,24 +55,86 @@ func PrintTasks(tasks []task.Task) {
 		}
 	}
 
-	_ = table.Render()
+	err := table.Render()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func formatCompletedTask(t task.Task) (string, string, string) {
+	complete := colorize("✔", green)
+	title := colorize(t.Title, green)
+
+	if t.Due == "" {
+		return complete, title, colorize("Met: No due", green)
+	}
+
+	dueDate, err1 := time.Parse("2006-01-02", t.Due)
+	completeDate, err2 := time.Parse("2006-01-02", t.CompleteDate.String)
+
+	if err1 != nil || err2 != nil {
+		return complete, title, colorize(t.Due, green)
+	}
+
+	diff := int(truncateTime(completeDate).Sub(truncateTime(dueDate)).Hours() / 24)
+	diffText := dateDiff(dueDate, completeDate)
+
+	var due string
+	switch {
+	case diff == 0:
+		due = "Met: On Time"
+	case diff < 0:
+		due = fmt.Sprintf("Met: %s early", diffText)
+	default:
+		due = fmt.Sprintf("Missed: %s late", diffText)
+	}
+
+	return complete, title, colorize(due, green)
+}
+
+func formatIncompleteTask(t task.Task) (string, string, string) {
+	complete := colorize("✘", red)
+	relativeDue := formatDeadline(t.Due)
+
+	if strings.HasPrefix(relativeDue, "Overdue") {
+		return complete, colorize(t.Title, red), colorize(relativeDue, red)
+	}
+
+	switch relativeDue {
+	case "Today":
+		return complete, colorize(t.Title, orange), colorize(relativeDue, orange)
+	case "Tomorrow":
+		return complete, colorize(t.Title, yellow), colorize(relativeDue, yellow)
+	default:
+		return complete, colorize(t.Title, grey), colorize(relativeDue, grey)
+	}
+}
+
+func formatPriority(isHigh bool, highColor termenv.Color) string {
+	if isHigh {
+		return colorize("High", highColor)
+	}
+	return colorize("Normal", grey)
 }
 
 func formatDeadline(due string) string {
 	if due == "" {
 		return "None"
 	}
+
 	parsedDeadline, err := time.Parse("2006-01-02", due)
 	if err != nil {
 		return "Invalid date"
 	}
+
 	today := time.Now().Truncate(24 * time.Hour)
 	parsedDeadline = parsedDeadline.Truncate(24 * time.Hour)
 	days := int(parsedDeadline.Sub(today).Hours() / 24)
 
 	switch {
 	case days < 0:
-		return "Overdue"
+		diffText := dateDiff(parsedDeadline, today)
+		return fmt.Sprintf("Overdue: %s", diffText)
 	case days == 0:
 		return "Today"
 	case days == 1:
