@@ -46,6 +46,7 @@ var editCmd = &cobra.Command{
 
 		// task title is taken in as args
 		id, _ := strconv.Atoi(args[0])
+		task.CheckTaskExists(id)
 
 		if cmd.Flags().Changed("title") {
 			if err := task.SetTitle(id, editTitle); err != nil {

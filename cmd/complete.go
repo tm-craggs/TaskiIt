@@ -56,6 +56,8 @@ var completeCmd = &cobra.Command{
 				fmt.Println("Invalid task ID")
 			}
 
+			task.CheckTaskExists(id)
+
 			if err := task.CompleteTask(id); err != nil {
 				fmt.Println("Failed to complete task:", err.Error())
 				return

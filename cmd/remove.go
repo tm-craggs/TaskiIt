@@ -68,14 +68,16 @@ var removeCmd = &cobra.Command{
 			// code for single removal
 
 			if len(args) == 0 {
-				fmt.Println("Please specify the task ID to remove")
+				fmt.Println("Please enter task ID to remove")
 				return
 			}
 
 			id, err := strconv.Atoi(args[0])
 			if err != nil {
-				fmt.Println("Task ID not found")
+				fmt.Println("Invalid input for task ID")
 			}
+
+			task.CheckTaskExists(id)
 
 			if err := task.DeleteTask(id); err != nil {
 				fmt.Println("Failed to remove task:", err.Error())

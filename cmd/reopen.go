@@ -55,6 +55,8 @@ var reopenCmd = &cobra.Command{
 				fmt.Println("Invalid task ID")
 			}
 
+			task.CheckTaskExists(id)
+
 			if err := task.ReopenTask(id); err != nil {
 				fmt.Println("Failed to reopen task:", err.Error())
 				return
