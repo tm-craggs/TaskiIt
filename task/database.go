@@ -35,17 +35,17 @@ func InitDB() {
 	}
 }
 
-func CheckTaskExists(id int) {
+func CheckTaskExists(id int) (bool, error) {
 	var exists bool
 	query := "SELECT EXISTS(SELECT 1 FROM tasks WHERE id = ?)"
+
 	err := DB.QueryRow(query, id).Scan(&exists)
 	if err != nil {
-		log.Fatalf("Query error: %v\n", err)
+		return false, fmt.Errorf("query error checking task existence: %w", err)
 	}
-	if !exists {
-		fmt.Printf("Task ID %d not found. Exiting.\n", id)
-		os.Exit(1)
-	}
+
+	return exists, nil
+
 }
 
 func AddTask(t Task) error {
