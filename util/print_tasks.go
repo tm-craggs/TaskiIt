@@ -20,7 +20,7 @@ var (
 	orange       = p.Color("#FF8000")
 	yellow       = p.Color("#FFFF00")
 	grey         = p.Color("#FFFFFF")
-	colorize     = func(s string, c termenv.Color) string { return termenv.String(s).Foreground(c).String() }
+	colorise     = func(s string, c termenv.Color) string { return termenv.String(s).Foreground(c).String() }
 	truncateTime = func(t time.Time) time.Time { return t.Truncate(24 * time.Hour) }
 )
 
@@ -62,18 +62,18 @@ func PrintTasks(tasks []task.Task) {
 }
 
 func formatCompletedTask(t task.Task) (string, string, string) {
-	complete := colorize("✔", green)
-	title := colorize(t.Title, green)
+	complete := colorise("✔", green)
+	title := colorise(t.Title, green)
 
 	if t.Due == "" {
-		return complete, title, colorize("Met: No due", green)
+		return complete, title, colorise("Met: No due", green)
 	}
 
 	dueDate, err1 := time.Parse("2006-01-02", t.Due)
 	completeDate, err2 := time.Parse("2006-01-02", t.CompleteDate.String)
 
 	if err1 != nil || err2 != nil {
-		return complete, title, colorize(t.Due, green)
+		return complete, title, colorise(t.Due, green)
 	}
 
 	diff := int(truncateTime(completeDate).Sub(truncateTime(dueDate)).Hours() / 24)
@@ -89,32 +89,32 @@ func formatCompletedTask(t task.Task) (string, string, string) {
 		due = fmt.Sprintf("Missed: %s late", diffText)
 	}
 
-	return complete, title, colorize(due, green)
+	return complete, title, colorise(due, green)
 }
 
 func formatIncompleteTask(t task.Task) (string, string, string) {
-	complete := colorize("✘", red)
+	complete := colorise("✘", red)
 	relativeDue := formatDeadline(t.Due)
 
 	if strings.HasPrefix(relativeDue, "Overdue") {
-		return complete, colorize(t.Title, red), colorize(relativeDue, red)
+		return complete, colorise(t.Title, red), colorise(relativeDue, red)
 	}
 
 	switch relativeDue {
 	case "Today":
-		return complete, colorize(t.Title, orange), colorize(relativeDue, orange)
+		return complete, colorise(t.Title, orange), colorise(relativeDue, orange)
 	case "Tomorrow":
-		return complete, colorize(t.Title, yellow), colorize(relativeDue, yellow)
+		return complete, colorise(t.Title, yellow), colorise(relativeDue, yellow)
 	default:
-		return complete, colorize(t.Title, grey), colorize(relativeDue, grey)
+		return complete, colorise(t.Title, grey), colorise(relativeDue, grey)
 	}
 }
 
 func formatPriority(isHigh bool, highColor termenv.Color) string {
 	if isHigh {
-		return colorize("High", highColor)
+		return colorise("High", highColor)
 	}
-	return colorize("Normal", grey)
+	return colorise("Normal", grey)
 }
 
 func formatDeadline(due string) string {
