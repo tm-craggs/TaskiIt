@@ -7,65 +7,77 @@ import (
 	"strconv"
 )
 
+// completeCmd represented the `complete` command for marking tasks as done
 var completeCmd = &cobra.Command{
 	Use:   "complete",
 	Short: "Complete a task",
 	Long:  `Long goes here`,
+
+	// PreRunE runs before the main logic
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := task.BackupDB()
+
 		if err != nil {
-			return err
+			// return error to PreRunE
+			return fmt.Errorf("failed to back up database: %w", err)
 		}
 
+		// no error, continue to main logic
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
 
+	// core logic for `complete` command
+	RunE: func(cmd *cobra.Command, args []string) error {
+
+		// check if --all flag set
 		var completeAll, err = cmd.Flags().GetBool("all")
 		if err != nil {
-			fmt.Println(err)
-			return
+			return fmt.Errorf("failed to get flag options: %w", err)
 		}
 
 		// code for --all flag
 		if completeAll {
 
 			if len(args) > 0 {
-				fmt.Println("Use --all only to complete all tasks")
-				return
+				return fmt.Errorf("--all flag cannot be used with task IDs")
 			}
 
 			if err := task.CompleteAllTasks(); err != nil {
-				fmt.Println("Failed to complete all tasks", err.Error())
-				return
+				return fmt.Errorf("failed to complete all tasks: %w", err)
 			}
 
-			fmt.Println("All tasks successfully")
-
-		} else {
-
-			// code for single removal
-
-			if len(args) == 0 {
-				fmt.Println("Please specify the task ID to remove")
-				return
-			}
-
-			id, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Println("Invalid task ID")
-			}
-
-			task.CheckTaskExists(id)
-
-			if err := task.CompleteTask(id); err != nil {
-				fmt.Println("Failed to complete task:", err.Error())
-				return
-			}
-
-			fmt.Println("Task completed successfully")
-
+			// print confirmation and return
+			fmt.Println("All tasks marked complete")
+			return nil
 		}
+
+		// single task removal for single logic
+
+		//
+		if len(args) == 0 {
+			return fmt.Errorf("task ID required")
+		}
+
+		id, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("failed to parse task ID: %w", err)
+		}
+
+		exists, err := task.CheckTaskExists(id)
+		if err != nil {
+			return fmt.Errorf("failed to check task existence: %w", err)
+		}
+
+		if !exists {
+			return fmt.Errorf("task ID not found")
+		}
+
+		if err := task.CompleteTask(id); err != nil {
+			return fmt.Errorf("failed to complete task: %w", err)
+		}
+
+		fmt.Println("Task completed successfully")
+		return nil
 	},
 }
 
