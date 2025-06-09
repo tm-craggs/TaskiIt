@@ -65,14 +65,8 @@ var completeCmd = &cobra.Command{
 		}
 
 		// check if input ID exists in DB
-		exists, err := task.CheckTaskExists(id)
-		if err != nil {
-			return fmt.Errorf("failed to check task existence: %w", err)
-		}
-
-		// if not exists, throw error
-		if !exists {
-			return fmt.Errorf("task ID not found")
+		if err := task.CheckTaskExists(id); err != nil {
+			return fmt.Errorf("task does not exist: %w", err)
 		}
 
 		// call complete task
