@@ -57,12 +57,12 @@ func AddTask(t Task) error {
 	return err
 }
 
-func DeleteTask(id int) error {
+func RemoveTask(id int) error {
 	_, err := DB.Exec("DELETE FROM tasks WHERE id = ?", id)
 	return err
 }
 
-func DeleteAllTasks() error {
+func RemoveAllTasks() error {
 	// remove all items from database
 	_, err := DB.Exec("DELETE FROM tasks")
 	if err != nil {
