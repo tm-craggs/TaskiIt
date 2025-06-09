@@ -26,48 +26,67 @@ var editCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+
+		// check if a task name was provided
 		if len(args) == 0 {
-			fmt.Println("Please enter a task name")
-			return
+			return fmt.Errorf("no task ID provided")
 		}
 
+		// parse task ID
+		id, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid task ID %w", err)
+		}
+
+		// check if task exists
+		if err := task.CheckTaskExists(id); err != nil {
+			return fmt.Errorf("task does not exist %w", err)
+		}
+
+		// get string following --title flag
+		editTitle, err := cmd.Flags().GetString("title")
+		if err != nil {
+			return err
+		}
+
+		// get string following --due flag
 		editDue, err := cmd.Flags().GetString("due")
 		if err != nil {
-			fmt.Println(err)
-			return
+			return err
 		}
 
-		editTitle, err := cmd.Flags().GetString("due")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		// check if flag was used, store as boolean
+		priorityChanged := cmd.Flags().Changed("priority")
+		titleChanged := cmd.Flags().Changed("title")
+		dueChanged := cmd.Flags().Changed("due")
 
-		// task title is taken in as args
-		id, _ := strconv.Atoi(args[0])
-		task.CheckTaskExists(id)
+		// apply edits if booleans are true
 
-		if cmd.Flags().Changed("title") {
+		if titleChanged {
 			if err := task.SetTitle(id, editTitle); err != nil {
-				fmt.Println(err)
+				return fmt.Errorf("failed to update title: %w", err)
 			}
 		}
 
-		if cmd.Flags().Changed("priority") {
+		if priorityChanged {
 			if err := task.TogglePriority(id); err != nil {
-				fmt.Println(err)
+				return fmt.Errorf("failed to toggle priority: %w", err)
 			}
 		}
 
-		if cmd.Flags().Changed("due") {
-			util.VerifyDate(editDue)
+		if dueChanged {
+			if err := util.VerifyDate(editDue); err != nil {
+				return fmt.Errorf("invalid due date: %w", err)
+			}
 			if err := task.SetDue(id, editDue); err != nil {
-				fmt.Println(err)
+				return fmt.Errorf("failed to update due date: %w", err)
 			}
 		}
 
-		fmt.Println("Task updated successfully")
+		fmt.Println("Task updated")
+
+		return nil
 
 	},
 }
