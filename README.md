@@ -17,10 +17,8 @@ Contributions are encouraged and will be welcome after the first release. See **
 
 ### Pre-Release TODO
 - Change due date in database to use NULL instead of empty string
-- Guard against improper command formatting
-- Improve post-command output, detail changes made
-- Improve documentation and CLI `--help` output
-- General code and documentation clean-up
+- Harden error handling for user inputs
+- Improve documentation and `--help` output
 - Package for release and ensure README has installation instructions for supported platforms
 
 ### Wishlist (Post-Release Ideas)
