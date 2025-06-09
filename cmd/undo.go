@@ -18,13 +18,14 @@ var undoCmd = &cobra.Command{
 		}
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		err := task.RestoreBackup()
 		if err != nil {
-			fmt.Println("No backup found")
-			return
+			return fmt.Errorf("no backup found: %w", err)
 		}
+
+		return nil
 
 	},
 }
