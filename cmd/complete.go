@@ -53,29 +53,34 @@ var completeCmd = &cobra.Command{
 
 		// single task removal for single logic
 
-		//
+		// check input has been given
 		if len(args) == 0 {
 			return fmt.Errorf("task ID required")
 		}
 
+		// convert args input to int
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
 			return fmt.Errorf("failed to parse task ID: %w", err)
 		}
 
+		// check if input ID exists in DB
 		exists, err := task.CheckTaskExists(id)
 		if err != nil {
 			return fmt.Errorf("failed to check task existence: %w", err)
 		}
 
+		// if not exists, throw error
 		if !exists {
 			return fmt.Errorf("task ID not found")
 		}
 
+		// call complete task
 		if err := task.CompleteTask(id); err != nil {
 			return fmt.Errorf("failed to complete task: %w", err)
 		}
 
+		// print confirmation
 		fmt.Println("Task completed successfully")
 		return nil
 	},
