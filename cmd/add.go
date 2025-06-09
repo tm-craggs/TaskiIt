@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
 	"github.com/tcraggs/TidyTask/util"
-	"os"
 	"strings"
 )
 
@@ -18,34 +17,37 @@ var addCmd = &cobra.Command{
 	// PreRunE runs before main logic
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 
-		// backup the database before making changes
 		err := task.BackupDB()
-		if err != nil {
-			return err
-		} // return error if backup fails
 
-		return nil // otherwise, continue
+		if err != nil {
+			// return error to PreRunE and print to standard output
+			return fmt.Errorf("failed to back up database: %w", err)
+		}
+
+		// no error, continue to main logic
+		return nil
 	},
 
 	// core logic for `add` command
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		// check if a task name was provided
 		if len(args) == 0 {
-			fmt.Println("Error: Task name is required")
-			os.Exit(1)
+			return fmt.Errorf("no task name provided")
 		}
-
-		// parse optional flags the command. --due and --priority
-		due, _ := cmd.Flags().GetString("due")
-		priority, _ := cmd.Flags().GetBool("priority")
 
 		// join all args into a single string to allow task names with spaces
 		title := strings.Join(args, " ")
 
+		// parse optional flags --due and --priority
+		due, _ := cmd.Flags().GetString("due")
+		priority, _ := cmd.Flags().GetBool("priority")
+
 		// if a due date was provided, ensure it uses valid formatting
 		if due != "" {
-			util.VerifyDate(due)
+			if err := util.VerifyDate(due); err != nil {
+				return fmt.Errorf("invalid date format. use YYYY-MM-DD")
+			}
 		}
 
 		// create new task struct with provided values
@@ -58,14 +60,12 @@ var addCmd = &cobra.Command{
 
 		// add the task to database using addTask function
 		if err := task.AddTask(newTask); err != nil {
-			// exit program and print error
-			fmt.Println("Error: Failed to add task", err.Error())
-			os.Exit(1)
+			return fmt.Errorf("failed to add task: %w", err)
 		}
 
 		// print confirmation
 		fmt.Println("Task Created")
-
+		return nil
 	},
 }
 
