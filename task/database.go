@@ -78,6 +78,17 @@ func RemoveAllTasks() error {
 	return nil
 }
 
+func RemoveAllCompleteTasks() error {
+	// remove all complete tasks
+	_, err := DB.Exec("DELETE FROM tasks WHERE complete = 1")
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func CompleteTask(id int) error {
 	currentDate := time.Now().Format("2006-01-02")
 	_, err := DB.Exec(`
