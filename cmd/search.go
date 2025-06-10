@@ -11,7 +11,7 @@ var searchCmd = &cobra.Command{
 	Use:   "search",
 	Short: "add a new task to your to-do list",
 	Long:  `Long description goes here`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		tasks, _ := task.SearchTasks("hello", false, true, false)
 
@@ -23,7 +23,7 @@ var searchCmd = &cobra.Command{
 
 		tasks, err := task.SearchTasks(keyword, searchID, searchTitle, searchDue)
 		if err != nil {
-			fmt.Println("Error searching terms", err)
+			return fmt.Errorf("failed searching tasks: %w", err)
 		}
 
 		filterPriority, _ := cmd.Flags().GetBool("priority")
@@ -32,6 +32,8 @@ var searchCmd = &cobra.Command{
 		filterNotPriority, _ := cmd.Flags().GetBool("normal")
 
 		util.PrintTasks(util.FilterTasks(tasks, filterComplete, filterPriority, filterNotComplete, filterNotPriority))
+
+		return nil
 
 	},
 }
