@@ -10,40 +10,40 @@ import (
 
 // Struct to hold flag values for the remove command
 type removeFlags struct {
-	All      bool
-	Complete bool
-	Priority bool
-	Open     bool
-	Normal   bool
+	all      bool
+	complete bool
+	priority bool
+	open     bool
+	normal   bool
 }
 
 // Helper function to parse flags for removeCmd
 func getRemoveFlags(cmd *cobra.Command) (*removeFlags, error) {
-	f := &removeFlags{}
+	flags := &removeFlags{}
 	var err error
 
-	if f.All, err = cmd.Flags().GetBool("all"); err != nil {
+	if flags.all, err = cmd.Flags().GetBool("all"); err != nil {
 		return nil, fmt.Errorf("failed to parse --all flag: %w", err)
 	}
-	if f.Complete, err = cmd.Flags().GetBool("complete"); err != nil {
+	if flags.complete, err = cmd.Flags().GetBool("complete"); err != nil {
 		return nil, fmt.Errorf("failed to parse --complete flag: %w", err)
 	}
-	if f.Priority, err = cmd.Flags().GetBool("priority"); err != nil {
+	if flags.priority, err = cmd.Flags().GetBool("priority"); err != nil {
 		return nil, fmt.Errorf("failed to parse --priority flag: %w", err)
 	}
-	if f.Open, err = cmd.Flags().GetBool("open"); err != nil {
+	if flags.open, err = cmd.Flags().GetBool("open"); err != nil {
 		return nil, fmt.Errorf("failed to parse --open flag: %w", err)
 	}
-	if f.Normal, err = cmd.Flags().GetBool("normal"); err != nil {
+	if flags.normal, err = cmd.Flags().GetBool("normal"); err != nil {
 		return nil, fmt.Errorf("failed to parse --normal flag: %w", err)
 	}
 
-	return f, nil
+	return flags, nil
 }
 
 var removeCmd = &cobra.Command{
 	Use:   "remove",
-	Short: "Remove a task",
+	Short: "Remove all task",
 	Long:  `Long description here`,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -53,18 +53,18 @@ var removeCmd = &cobra.Command{
 		}
 
 		// --all cannot be combined with other flags or args
-		if flags.All {
-			if flags.Complete || flags.Priority || flags.Open || flags.Normal || len(args) > 0 {
+		if flags.all {
+			if flags.complete || flags.priority || flags.open || flags.normal || len(args) > 0 {
 				return fmt.Errorf("--all cannot be combined with other flags or task IDs")
 			}
 		}
 
-		noFlags := !flags.All && !flags.Complete && !flags.Priority && !flags.Open && !flags.Normal
+		noFlags := !flags.all && !flags.complete && !flags.priority && !flags.open && !flags.normal
 		if noFlags && len(args) == 0 {
 			return fmt.Errorf("task ID required")
 		}
 
-		// If a task ID is provided, check that it is valid
+		// If all task ID is provided, check that it is valid
 		if len(args) > 0 {
 			id, err := strconv.Atoi(args[0])
 			if err != nil {
@@ -79,11 +79,11 @@ var removeCmd = &cobra.Command{
 		// Prepare confirmation text
 		var confirmationText string
 		switch {
-		case flags.All:
+		case flags.all:
 			confirmationText = "Remove all tasks?"
-		case flags.Complete:
+		case flags.complete:
 			confirmationText = "Remove all completed tasks?"
-		case flags.Priority, flags.Open, flags.Normal:
+		case flags.priority, flags.open, flags.normal:
 			confirmationText = "Remove filtered tasks?"
 		default:
 			confirmationText = "Remove task " + args[0] + "?"
@@ -107,20 +107,20 @@ var removeCmd = &cobra.Command{
 			return fmt.Errorf("error parsing flags: %w", err)
 		}
 
-		if flags.All {
+		if flags.all {
 			if err := task.RemoveAllTasks(); err != nil {
 				return fmt.Errorf("failed to remove all tasks: %w", err)
 			}
 			return nil
 		}
 
-		if flags.Complete || flags.Priority || flags.Open || flags.Normal {
+		if flags.complete || flags.priority || flags.open || flags.normal {
 			tasks, err := task.GetTasks()
 			if err != nil {
 				return fmt.Errorf("failed to get tasks: %w", err)
 			}
 
-			filteredTasks := util.FilterTasks(tasks, flags.Complete, flags.Priority, flags.Open, flags.Normal)
+			filteredTasks := util.FilterTasks(tasks, flags.complete, flags.priority, flags.open, flags.normal)
 
 			if err := task.RemoveInputTasks(filteredTasks); err != nil {
 				return fmt.Errorf("failed to remove filtered tasks: %w", err)
@@ -143,7 +143,7 @@ var removeCmd = &cobra.Command{
 }
 
 func init() {
-	removeCmd.Flags().BoolP("all", "a", false, "Remove all tasks")
+	removeCmd.Flags().BoolP("all", "all", false, "Remove all tasks")
 	removeCmd.Flags().BoolP("complete", "c", false, "Remove all complete tasks")
 	removeCmd.Flags().BoolP("open", "o", false, "Remove all open tasks")
 	removeCmd.Flags().BoolP("priority", "p", false, "Remove all priority tasks")

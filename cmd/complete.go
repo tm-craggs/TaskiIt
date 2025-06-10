@@ -8,25 +8,25 @@ import (
 )
 
 type completeFlags struct {
-	All bool
+	all bool
 }
 
 func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
-	var f completeFlags
+	var flags completeFlags
 	var err error
 
-	f.All, err = cmd.Flags().GetBool("all")
+	flags.all, err = cmd.Flags().GetBool("all")
 	if err != nil {
-		return f, fmt.Errorf("failed to parse --all flag: %w", err)
+		return flags, fmt.Errorf("failed to parse --all flag: %w", err)
 	}
 
-	return f, nil
+	return flags, nil
 }
 
 // completeCmd represented the `complete` command for marking tasks as done
 var completeCmd = &cobra.Command{
 	Use:   "complete",
-	Short: "Complete a task",
+	Short: "complete all task",
 	Long:  `Long goes here`,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -42,7 +42,7 @@ var completeCmd = &cobra.Command{
 			return err
 		}
 
-		if flags.All {
+		if flags.all {
 			if len(args) > 0 {
 				return fmt.Errorf("--all flag cannot be used with task IDs")
 			}
@@ -51,7 +51,7 @@ var completeCmd = &cobra.Command{
 				return fmt.Errorf("failed to complete all tasks: %w", err)
 			}
 
-			fmt.Println("All tasks marked complete")
+			fmt.Println("all tasks marked complete")
 			return nil
 		}
 
@@ -78,6 +78,6 @@ var completeCmd = &cobra.Command{
 }
 
 func init() {
-	completeCmd.Flags().BoolP("all", "a", false, "Complete all tasks")
+	completeCmd.Flags().BoolP("all", "all", false, "complete all tasks")
 	rootCmd.AddCommand(completeCmd)
 }

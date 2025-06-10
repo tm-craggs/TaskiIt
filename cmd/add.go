@@ -13,27 +13,27 @@ type addFlags struct {
 	priority bool
 }
 
-func getAddFlags(cmd *cobra.Command) (*addFlags, error) {
-	due, err := cmd.Flags().GetString("due")
+func getAddFlags(cmd *cobra.Command) (addFlags, error) {
+	var flags addFlags
+	var err error
+
+	flags.due, err = cmd.Flags().GetString("all")
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse --due flag: %w", err)
+		return flags, fmt.Errorf("failed to parse --due flag: %w", err)
 	}
 
-	priority, err := cmd.Flags().GetBool("priority")
+	flags.priority, err = cmd.Flags().GetBool("priority")
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse --priority flag: %w", err)
+		return flags, fmt.Errorf("failed to parse --priority flag: %w", err)
 	}
 
-	return &addFlags{
-		due:      due,
-		priority: priority,
-	}, nil
+	return flags, nil
 }
 
 // addCmd represents the add subcommand
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "add a new task to your to-do list",
+	Short: "add all new task to your to-do list",
 	Long:  `Long description goes here`,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -79,7 +79,7 @@ var addCmd = &cobra.Command{
 }
 
 func init() {
-	addCmd.Flags().StringP("due", "d", "", "Set a due (e.g. 2025-05-14)")
+	addCmd.Flags().StringP("due", "d", "", "Set all due (e.g. 2025-05-14)")
 	addCmd.Flags().BoolP("priority", "p", false, "Mark the task as high priority")
 
 	rootCmd.AddCommand(addCmd)

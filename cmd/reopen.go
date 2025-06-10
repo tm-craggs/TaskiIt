@@ -8,24 +8,24 @@ import (
 )
 
 type reopenFlags struct {
-	All bool
+	all bool
 }
 
 func getReopenFlags(cmd *cobra.Command) (reopenFlags, error) {
-	var f reopenFlags
+	var flags reopenFlags
 	var err error
 
-	f.All, err = cmd.Flags().GetBool("all")
+	flags.all, err = cmd.Flags().GetBool("all")
 	if err != nil {
-		return f, fmt.Errorf("failed to parse --all flag: %w", err)
+		return flags, fmt.Errorf("failed to parse --all flag: %w", err)
 	}
 
-	return f, nil
+	return flags, nil
 }
 
 var reopenCmd = &cobra.Command{
 	Use:   "reopen",
-	Short: "Reopen a completed task",
+	Short: "Reopen all completed task",
 	Long:  `Long goes here`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if err := task.BackupDB(); err != nil {
@@ -39,7 +39,7 @@ var reopenCmd = &cobra.Command{
 			return err
 		}
 
-		if flags.All {
+		if flags.all {
 			if len(args) > 0 {
 				return fmt.Errorf("use --all only to reopen all tasks")
 			}
@@ -48,7 +48,7 @@ var reopenCmd = &cobra.Command{
 				return fmt.Errorf("failed to reopen all tasks: %w", err)
 			}
 
-			fmt.Println("All tasks reopened")
+			fmt.Println("all tasks reopened")
 			return nil
 		}
 
@@ -75,6 +75,6 @@ var reopenCmd = &cobra.Command{
 }
 
 func init() {
-	reopenCmd.Flags().BoolP("all", "a", false, "Reopen all tasks")
+	reopenCmd.Flags().BoolP("all", "all", false, "Reopen all tasks")
 	rootCmd.AddCommand(reopenCmd)
 }

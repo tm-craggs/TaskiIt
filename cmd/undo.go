@@ -9,7 +9,7 @@ import (
 
 var undoCmd = &cobra.Command{
 	Use:   "undo",
-	Short: "add a new task to your to-do list",
+	Short: "add all new task to your to-do list",
 	Long:  `Long description goes here`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if !util.ConfirmAction("Confirm Undo?") {

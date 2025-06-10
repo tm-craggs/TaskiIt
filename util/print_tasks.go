@@ -31,7 +31,7 @@ func PrintTasks(tasks []task.Task) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.Header([]string{"ID", "Title", "Due", "Complete", "Priority"})
+	table.Header([]string{"ID", "title", "due", "complete", "priority"})
 
 	for _, t := range tasks {
 		var title, due, complete, priority string
@@ -114,7 +114,7 @@ func formatPriority(isHigh bool, highColor termenv.Color) string {
 	if isHigh {
 		return colorise("High", highColor)
 	}
-	return colorise("Normal", grey)
+	return colorise("normal", grey)
 }
 
 func formatDeadline(due string) string {

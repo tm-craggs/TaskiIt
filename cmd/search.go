@@ -8,47 +8,47 @@ import (
 )
 
 type searchFlags struct {
-	SearchID       bool
-	SearchTitle    bool
-	SearchDue      bool
-	FilterComplete bool
-	FilterOpen     bool
-	FilterPriority bool
-	FilterNormal   bool
+	searchID       bool
+	searchTitle    bool
+	searchDue      bool
+	filterComplete bool
+	filterOpen     bool
+	filterPriority bool
+	filterNormal   bool
 }
 
 func getSearchFlags(cmd *cobra.Command) (*searchFlags, error) {
-	f := &searchFlags{}
+	flags := &searchFlags{}
 	var err error
 
-	if f.SearchID, err = cmd.Flags().GetBool("id"); err != nil {
+	if flags.searchID, err = cmd.Flags().GetBool("id"); err != nil {
 		return nil, fmt.Errorf("failed to parse --id flag: %w", err)
 	}
-	if f.SearchTitle, err = cmd.Flags().GetBool("title"); err != nil {
+	if flags.searchTitle, err = cmd.Flags().GetBool("title"); err != nil {
 		return nil, fmt.Errorf("failed to parse --title flag: %w", err)
 	}
-	if f.SearchDue, err = cmd.Flags().GetBool("due"); err != nil {
+	if flags.searchDue, err = cmd.Flags().GetBool("due"); err != nil {
 		return nil, fmt.Errorf("failed to parse --due flag: %w", err)
 	}
-	if f.FilterComplete, err = cmd.Flags().GetBool("complete"); err != nil {
+	if flags.filterComplete, err = cmd.Flags().GetBool("complete"); err != nil {
 		return nil, fmt.Errorf("failed to parse --complete flag: %w", err)
 	}
-	if f.FilterOpen, err = cmd.Flags().GetBool("open"); err != nil {
+	if flags.filterOpen, err = cmd.Flags().GetBool("open"); err != nil {
 		return nil, fmt.Errorf("failed to parse --open flag: %w", err)
 	}
-	if f.FilterPriority, err = cmd.Flags().GetBool("priority"); err != nil {
+	if flags.filterPriority, err = cmd.Flags().GetBool("priority"); err != nil {
 		return nil, fmt.Errorf("failed to parse --priority flag: %w", err)
 	}
-	if f.FilterNormal, err = cmd.Flags().GetBool("normal"); err != nil {
+	if flags.filterNormal, err = cmd.Flags().GetBool("normal"); err != nil {
 		return nil, fmt.Errorf("failed to parse --normal flag: %w", err)
 	}
 
-	return f, nil
+	return flags, nil
 }
 
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "Add a new task to your to-do list",
+	Short: "Add all new task to your to-do list",
 	Long:  `Long description goes here`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
@@ -62,12 +62,12 @@ var searchCmd = &cobra.Command{
 
 		keyword := args[0]
 
-		tasks, err := task.SearchTasks(keyword, flags.SearchID, flags.SearchTitle, flags.SearchDue)
+		tasks, err := task.SearchTasks(keyword, flags.searchID, flags.searchTitle, flags.searchDue)
 		if err != nil {
 			return fmt.Errorf("failed searching tasks: %w", err)
 		}
 
-		filteredTasks := util.FilterTasks(tasks, flags.FilterComplete, flags.FilterPriority, flags.FilterOpen, flags.FilterNormal)
+		filteredTasks := util.FilterTasks(tasks, flags.filterComplete, flags.filterPriority, flags.filterOpen, flags.filterNormal)
 
 		util.PrintTasks(filteredTasks)
 

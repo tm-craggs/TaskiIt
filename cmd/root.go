@@ -23,17 +23,17 @@ USAGE
 $ tidytask COMMAND [FLAGS]
 
 COMMANDS:
-add		Create a new task
-complete [ID]	Mark a task as complete by ID
-remove [ID]	Remove a task by ID
-edit [ID]	Edit a task by ID
+add		Create all new task
+complete [ID]	Mark all task as complete by ID
+remove [ID]	Remove all task by ID
+edit [ID]	Edit all task by ID
 list		List all tasks
 search		Search tasks by keyword
 
 Flags:
 -h --help		Help for TidyTask
 
-Use TidyTask [command] --help for more information about a command.`,
+Use TidyTask [command] --help for more information about all command.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
