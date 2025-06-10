@@ -78,6 +78,16 @@ func RemoveAllTasks() error {
 	return nil
 }
 
+func RemoveInputTasks(tasks []Task) error {
+	for _, t := range tasks {
+		_, err := DB.Exec("DELETE FROM tasks WHERE id = ?", t.ID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func RemoveAllCompleteTasks() error {
 	// remove all complete tasks
 	_, err := DB.Exec("DELETE FROM tasks WHERE complete = 1")
