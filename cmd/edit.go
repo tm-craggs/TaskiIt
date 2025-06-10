@@ -8,14 +8,48 @@ import (
 	"strconv"
 )
 
+type editFlags struct {
+	Title           string
+	Due             string
+	Priority        bool
+	TitleChanged    bool
+	DueChanged      bool
+	PriorityChanged bool
+}
+
+func getEditFlags(cmd *cobra.Command) (editFlags, error) {
+	var f editFlags
+	var err error
+
+	f.Title, err = cmd.Flags().GetString("title")
+	if err != nil {
+		return f, fmt.Errorf("failed to parse --title flag: %w", err)
+	}
+
+	f.Due, err = cmd.Flags().GetString("due")
+	if err != nil {
+		return f, fmt.Errorf("failed to parse --due flag: %w", err)
+	}
+
+	f.Priority, err = cmd.Flags().GetBool("priority")
+	if err != nil {
+		return f, fmt.Errorf("failed to parse --priority flag: %w", err)
+	}
+
+	f.TitleChanged = cmd.Flags().Changed("title")
+	f.DueChanged = cmd.Flags().Changed("due")
+	f.PriorityChanged = cmd.Flags().Changed("priority")
+
+	return f, nil
+}
+
 // addCmd represents the add command
 var editCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "add a new task to your to-do list",
 	Long:  `Long description goes here`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		err := task.BackupDB()
-		if err != nil {
+		if err := task.BackupDB(); err != nil {
 			return err
 		}
 
@@ -28,58 +62,41 @@ var editCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		// check if a task name was provided
 		if len(args) == 0 {
 			return fmt.Errorf("no task ID provided")
 		}
 
-		// parse task ID
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
 			return fmt.Errorf("invalid task ID %w", err)
 		}
 
-		// check if task exists
 		if err := task.CheckTaskExists(id); err != nil {
 			return fmt.Errorf("task does not exist %w", err)
 		}
 
-		// get string following --title flag
-		editTitle, err := cmd.Flags().GetString("title")
+		flags, err := getEditFlags(cmd)
 		if err != nil {
 			return err
 		}
 
-		// get string following --due flag
-		editDue, err := cmd.Flags().GetString("due")
-		if err != nil {
-			return err
-		}
-
-		// check if flag was used, store as boolean
-		priorityChanged := cmd.Flags().Changed("priority")
-		titleChanged := cmd.Flags().Changed("title")
-		dueChanged := cmd.Flags().Changed("due")
-
-		// apply edits if booleans are true
-
-		if titleChanged {
-			if err := task.SetTitle(id, editTitle); err != nil {
+		if flags.TitleChanged {
+			if err := task.SetTitle(id, flags.Title); err != nil {
 				return fmt.Errorf("failed to update title: %w", err)
 			}
 		}
 
-		if priorityChanged {
+		if flags.PriorityChanged {
 			if err := task.TogglePriority(id); err != nil {
 				return fmt.Errorf("failed to toggle priority: %w", err)
 			}
 		}
 
-		if dueChanged {
-			if err := util.VerifyDate(editDue); err != nil {
+		if flags.DueChanged {
+			if err := util.VerifyDate(flags.Due); err != nil {
 				return fmt.Errorf("invalid due date: %w", err)
 			}
-			if err := task.SetDue(id, editDue); err != nil {
+			if err := task.SetDue(id, flags.Due); err != nil {
 				return fmt.Errorf("failed to update due date: %w", err)
 			}
 		}
@@ -87,7 +104,6 @@ var editCmd = &cobra.Command{
 		fmt.Println("Task updated")
 
 		return nil
-
 	},
 }
 
@@ -97,5 +113,4 @@ func init() {
 	editCmd.Flags().StringP("title", "t", "", "Set a task title")
 
 	rootCmd.AddCommand(editCmd)
-
 }

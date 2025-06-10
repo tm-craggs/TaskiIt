@@ -7,64 +7,70 @@ import (
 	"strconv"
 )
 
+type reopenFlags struct {
+	All bool
+}
+
+func getReopenFlags(cmd *cobra.Command) (reopenFlags, error) {
+	var f reopenFlags
+	var err error
+
+	f.All, err = cmd.Flags().GetBool("all")
+	if err != nil {
+		return f, fmt.Errorf("failed to parse --all flag: %w", err)
+	}
+
+	return f, nil
+}
+
 var reopenCmd = &cobra.Command{
 	Use:   "reopen",
 	Short: "Reopen a completed task",
 	Long:  `Long goes here`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		err := task.BackupDB()
+		if err := task.BackupDB(); err != nil {
+			return err
+		}
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		flags, err := getReopenFlags(cmd)
 		if err != nil {
 			return err
 		}
 
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-
-		reopenAll, err := cmd.Flags().GetBool("all")
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		// code for --all flag
-		if reopenAll {
-
+		if flags.All {
 			if len(args) > 0 {
-				fmt.Println("Use --all only to reopen all tasks")
-				return
+				return fmt.Errorf("use --all only to reopen all tasks")
 			}
 
 			if err := task.ReopenAllTasks(); err != nil {
-				fmt.Println("Failed to reopen all tasks", err.Error())
-				return
+				return fmt.Errorf("failed to reopen all tasks: %w", err)
 			}
 
-			fmt.Println("All tasks reponed")
-
-		} else {
-
-			// code for single removal
-
-			if len(args) == 0 {
-				fmt.Println("Please specify the task ID to reopen")
-				return
-			}
-
-			id, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Println("Invalid task ID")
-			}
-
-			task.CheckTaskExists(id)
-
-			if err := task.ReopenTask(id); err != nil {
-				fmt.Println("Failed to reopen task:", err.Error())
-				return
-			}
-
-			fmt.Println("Task reponed")
-
+			fmt.Println("All tasks reopened")
+			return nil
 		}
+
+		if len(args) == 0 {
+			return fmt.Errorf("please specify the task ID to reopen")
+		}
+
+		id, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid task ID: %w", err)
+		}
+
+		if err := task.CheckTaskExists(id); err != nil {
+			return fmt.Errorf("task does not exist: %w", err)
+		}
+
+		if err := task.ReopenTask(id); err != nil {
+			return fmt.Errorf("failed to reopen task: %w", err)
+		}
+
+		fmt.Println("Task reopened")
+		return nil
 	},
 }
 

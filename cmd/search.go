@@ -7,34 +7,71 @@ import (
 	"github.com/tcraggs/TidyTask/util"
 )
 
+type searchFlags struct {
+	SearchID       bool
+	SearchTitle    bool
+	SearchDue      bool
+	FilterComplete bool
+	FilterOpen     bool
+	FilterPriority bool
+	FilterNormal   bool
+}
+
+func getSearchFlags(cmd *cobra.Command) (*searchFlags, error) {
+	f := &searchFlags{}
+	var err error
+
+	if f.SearchID, err = cmd.Flags().GetBool("id"); err != nil {
+		return nil, fmt.Errorf("failed to parse --id flag: %w", err)
+	}
+	if f.SearchTitle, err = cmd.Flags().GetBool("title"); err != nil {
+		return nil, fmt.Errorf("failed to parse --title flag: %w", err)
+	}
+	if f.SearchDue, err = cmd.Flags().GetBool("due"); err != nil {
+		return nil, fmt.Errorf("failed to parse --due flag: %w", err)
+	}
+	if f.FilterComplete, err = cmd.Flags().GetBool("complete"); err != nil {
+		return nil, fmt.Errorf("failed to parse --complete flag: %w", err)
+	}
+	if f.FilterOpen, err = cmd.Flags().GetBool("open"); err != nil {
+		return nil, fmt.Errorf("failed to parse --open flag: %w", err)
+	}
+	if f.FilterPriority, err = cmd.Flags().GetBool("priority"); err != nil {
+		return nil, fmt.Errorf("failed to parse --priority flag: %w", err)
+	}
+	if f.FilterNormal, err = cmd.Flags().GetBool("normal"); err != nil {
+		return nil, fmt.Errorf("failed to parse --normal flag: %w", err)
+	}
+
+	return f, nil
+}
+
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "add a new task to your to-do list",
+	Short: "Add a new task to your to-do list",
 	Long:  `Long description goes here`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return fmt.Errorf("no search word specified")
+		}
 
-		tasks, _ := task.SearchTasks("hello", false, true, false)
+		flags, err := getSearchFlags(cmd)
+		if err != nil {
+			return err
+		}
 
 		keyword := args[0]
 
-		searchID, _ := cmd.Flags().GetBool("id")
-		searchTitle, _ := cmd.Flags().GetBool("title")
-		searchDue, _ := cmd.Flags().GetBool("due")
-
-		tasks, err := task.SearchTasks(keyword, searchID, searchTitle, searchDue)
+		tasks, err := task.SearchTasks(keyword, flags.SearchID, flags.SearchTitle, flags.SearchDue)
 		if err != nil {
 			return fmt.Errorf("failed searching tasks: %w", err)
 		}
 
-		filterPriority, _ := cmd.Flags().GetBool("priority")
-		filterComplete, _ := cmd.Flags().GetBool("complete")
-		filterNotComplete, _ := cmd.Flags().GetBool("open")
-		filterNotPriority, _ := cmd.Flags().GetBool("normal")
+		filteredTasks := util.FilterTasks(tasks, flags.FilterComplete, flags.FilterPriority, flags.FilterOpen, flags.FilterNormal)
 
-		util.PrintTasks(util.FilterTasks(tasks, filterComplete, filterPriority, filterNotComplete, filterNotPriority))
+		util.PrintTasks(filteredTasks)
 
 		return nil
-
 	},
 }
 
@@ -51,5 +88,4 @@ func init() {
 	searchCmd.Flags().BoolP("open", "o", false, "Search only open tasks")
 	searchCmd.Flags().BoolP("priority", "p", false, "Search task by priority")
 	searchCmd.Flags().BoolP("normal", "n", false, "Search normal priority tasks")
-
 }

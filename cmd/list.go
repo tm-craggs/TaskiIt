@@ -7,25 +7,51 @@ import (
 	"github.com/tcraggs/TidyTask/util"
 )
 
+type listFlags struct {
+	priority bool
+	complete bool
+	open     bool
+	normal   bool
+}
+
+func getListFlags(cmd *cobra.Command) (listFlags, error) {
+	var flags listFlags
+	var err error
+
+	if flags.priority, err = cmd.Flags().GetBool("priority"); err != nil {
+		return flags, fmt.Errorf("failed to parse --priority flag: %w", err)
+	}
+	if flags.complete, err = cmd.Flags().GetBool("complete"); err != nil {
+		return flags, fmt.Errorf("failed to parse --complete flag: %w", err)
+	}
+	if flags.open, err = cmd.Flags().GetBool("open"); err != nil {
+		return flags, fmt.Errorf("failed to parse --open flag: %w", err)
+	}
+	if flags.normal, err = cmd.Flags().GetBool("normal"); err != nil {
+		return flags, fmt.Errorf("failed to parse --normal flag: %w", err)
+	}
+
+	return flags, nil
+}
+
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all tasks",
 	Long:  `List all tasks`,
 
-	Run: func(cmd *cobra.Command, args []string) {
-		filterPriority, _ := cmd.Flags().GetBool("priority")
-		filterComplete, _ := cmd.Flags().GetBool("complete")
-		filterNotComplete, _ := cmd.Flags().GetBool("open")
-		filterNotPriority, _ := cmd.Flags().GetBool("normal")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		flags, err := getListFlags(cmd)
+		if err != nil {
+			return err
+		}
 
 		tasks, err := task.GetTasks()
 		if err != nil {
-			fmt.Println("Failed to get tasks: " + err.Error())
-			return
+			return fmt.Errorf("failed to get tasks: %w", err)
 		}
 
-		util.PrintTasks(util.FilterTasks(tasks, filterComplete, filterPriority, filterNotComplete, filterNotPriority))
-
+		util.PrintTasks(util.FilterTasks(tasks, flags.complete, flags.priority, flags.open, flags.normal))
+		return nil
 	},
 }
 

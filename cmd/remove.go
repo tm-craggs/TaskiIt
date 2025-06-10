@@ -49,7 +49,7 @@ var removeCmd = &cobra.Command{
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		flags, err := getRemoveFlags(cmd)
 		if err != nil {
-			return fmt.Errorf("error parsing flags: %w", err)
+			return err
 		}
 
 		// --all cannot be combined with other flags or args
@@ -61,14 +61,14 @@ var removeCmd = &cobra.Command{
 
 		noFlags := !flags.All && !flags.Complete && !flags.Priority && !flags.Open && !flags.Normal
 		if noFlags && len(args) == 0 {
-			return fmt.Errorf("task ID required when no flags are provided")
+			return fmt.Errorf("task ID required")
 		}
 
 		// If a task ID is provided, check that it is valid
 		if len(args) > 0 {
 			id, err := strconv.Atoi(args[0])
 			if err != nil {
-				return fmt.Errorf("invalid task ID format: %s", args[0])
+				return fmt.Errorf("invalid task ID: %s", args[0])
 			}
 
 			if err := task.CheckTaskExists(id); err != nil {

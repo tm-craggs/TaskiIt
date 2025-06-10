@@ -7,37 +7,42 @@ import (
 	"strconv"
 )
 
+type completeFlags struct {
+	All bool
+}
+
+func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
+	var f completeFlags
+	var err error
+
+	f.All, err = cmd.Flags().GetBool("all")
+	if err != nil {
+		return f, fmt.Errorf("failed to parse --all flag: %w", err)
+	}
+
+	return f, nil
+}
+
 // completeCmd represented the `complete` command for marking tasks as done
 var completeCmd = &cobra.Command{
 	Use:   "complete",
 	Short: "Complete a task",
 	Long:  `Long goes here`,
 
-	// PreRunE runs before the main logic
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		err := task.BackupDB()
-
-		if err != nil {
-			// return error to PreRunE
+		if err := task.BackupDB(); err != nil {
 			return fmt.Errorf("failed to back up database: %w", err)
 		}
-
-		// no error, continue to main logic
 		return nil
 	},
 
-	// core logic for `complete` command
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		// check if --all flag set
-		var completeAll, err = cmd.Flags().GetBool("all")
+		flags, err := getCompleteFlags(cmd)
 		if err != nil {
-			return fmt.Errorf("failed to get flag options: %w", err)
+			return err
 		}
 
-		// code for --all flag
-		if completeAll {
-
+		if flags.All {
 			if len(args) > 0 {
 				return fmt.Errorf("--all flag cannot be used with task IDs")
 			}
@@ -46,35 +51,27 @@ var completeCmd = &cobra.Command{
 				return fmt.Errorf("failed to complete all tasks: %w", err)
 			}
 
-			// print confirmation and return
 			fmt.Println("All tasks marked complete")
 			return nil
 		}
 
-		// single task removal for single logic
-
-		// check input has been given
 		if len(args) == 0 {
 			return fmt.Errorf("task ID required")
 		}
 
-		// convert args input to int
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
 			return fmt.Errorf("failed to parse task ID: %w", err)
 		}
 
-		// check if input ID exists in DB
 		if err := task.CheckTaskExists(id); err != nil {
 			return fmt.Errorf("task does not exist: %w", err)
 		}
 
-		// call complete task
 		if err := task.CompleteTask(id); err != nil {
 			return fmt.Errorf("failed to complete task: %w", err)
 		}
 
-		// print confirmation
 		fmt.Println("Task completed successfully")
 		return nil
 	},
