@@ -75,6 +75,6 @@ var reopenCmd = &cobra.Command{
 }
 
 func init() {
-	reopenCmd.Flags().BoolP("all", "all", false, "Reopen all tasks")
+	reopenCmd.Flags().BoolP("all", "a", false, "Reopen all tasks")
 	rootCmd.AddCommand(reopenCmd)
 }

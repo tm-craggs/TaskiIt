@@ -17,7 +17,7 @@ func getAddFlags(cmd *cobra.Command) (addFlags, error) {
 	var flags addFlags
 	var err error
 
-	flags.due, err = cmd.Flags().GetString("all")
+	flags.due, err = cmd.Flags().GetString("due")
 	if err != nil {
 		return flags, fmt.Errorf("failed to parse --due flag: %w", err)
 	}

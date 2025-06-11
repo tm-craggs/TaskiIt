@@ -143,7 +143,7 @@ var removeCmd = &cobra.Command{
 }
 
 func init() {
-	removeCmd.Flags().BoolP("all", "all", false, "Remove all tasks")
+	removeCmd.Flags().BoolP("all", "a", false, "Remove all tasks")
 	removeCmd.Flags().BoolP("complete", "c", false, "Remove all complete tasks")
 	removeCmd.Flags().BoolP("open", "o", false, "Remove all open tasks")
 	removeCmd.Flags().BoolP("priority", "p", false, "Remove all priority tasks")
