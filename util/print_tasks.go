@@ -38,10 +38,10 @@ func PrintTasks(tasks []task.Task) {
 
 		if t.Complete {
 			complete, title, due = formatCompletedTask(t)
-			priority = formatPriority(t.Priority, green)
+			priority = formatPriority(t.Priority, green, green)
 		} else {
 			complete, title, due = formatIncompleteTask(t)
-			priority = formatPriority(t.Priority, brightBlue)
+			priority = formatPriority(t.Priority, brightBlue, grey)
 		}
 
 		if err := table.Append([]string{
@@ -110,11 +110,11 @@ func formatIncompleteTask(t task.Task) (string, string, string) {
 	}
 }
 
-func formatPriority(isHigh bool, highColor termenv.Color) string {
+func formatPriority(isHigh bool, highColor, normalColor termenv.Color) string {
 	if isHigh {
 		return colorise("High", highColor)
 	}
-	return colorise("normal", grey)
+	return colorise("Normal", normalColor)
 }
 
 func formatDeadline(due string) string {
