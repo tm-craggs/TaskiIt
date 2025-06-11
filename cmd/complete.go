@@ -59,6 +59,7 @@ var completeCmd = &cobra.Command{
 				return fmt.Errorf("failed to retrieve tasks: %w", err)
 			}
 
+			completed := 0
 			for _, t := range tasks {
 				if flags.priority && !t.Priority {
 					continue
@@ -66,12 +67,19 @@ var completeCmd = &cobra.Command{
 				if flags.normal && t.Priority {
 					continue
 				}
+
+				if t.Complete {
+					continue
+				}
+
 				if err := task.CompleteTask(t.ID); err != nil {
 					fmt.Printf("failed to complete task %d: %v\n", t.ID, err)
+				} else {
+					completed++
 				}
 			}
 
-			fmt.Println("Filtered tasks marked complete")
+			fmt.Printf("Completed %d tasks\n", completed)
 			return nil
 		}
 
@@ -98,8 +106,8 @@ var completeCmd = &cobra.Command{
 }
 
 func init() {
-	completeCmd.Flags().Bool("all", false, "Complete all tasks (optionally with filters)")
-	completeCmd.Flags().Bool("priority", false, "Complete only high-priority tasks (requires --all)")
-	completeCmd.Flags().Bool("normal", false, "Complete only normal-priority tasks (requires --all)")
+	completeCmd.Flags().BoolP("all", "a", false, "Complete all tasks (optionally with filters)")
+	completeCmd.Flags().BoolP("priority", "p", false, "Complete only high-priority tasks (requires --all)")
+	completeCmd.Flags().BoolP("normal", "n", false, "Complete only normal-priority tasks (requires --all)")
 	rootCmd.AddCommand(completeCmd)
 }
