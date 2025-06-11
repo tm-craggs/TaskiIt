@@ -5,6 +5,7 @@ Copyright © 2025 NAME HERE <tom.craggs@protonmail.com>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -45,8 +46,14 @@ Use TidyTask [command] --help for more information about all command.`,
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
+	rootCmd.SilenceUsage = false                    // Show usage when error occurs
+	rootCmd.SilenceErrors = false                   // Print errors
+	rootCmd.TraverseChildren = false                // Don't defer flags to subcommands
+	rootCmd.FParseErrWhitelist.UnknownFlags = false // Be strict about flags
+
+	if err := rootCmd.Execute(); err != nil {
+		// This prints the error to stderr
+		_, _ = fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
 }
@@ -60,5 +67,4 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
