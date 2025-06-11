@@ -8,26 +8,33 @@ import (
 )
 
 type completeFlags struct {
-	all bool
+	all      bool
+	priority bool
+	normal   bool
 }
 
 func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
 	var flags completeFlags
 	var err error
 
-	flags.all, err = cmd.Flags().GetBool("all")
-	if err != nil {
+	if flags.all, err = cmd.Flags().GetBool("all"); err != nil {
 		return flags, fmt.Errorf("failed to parse --all flag: %w", err)
+	}
+	if flags.priority, err = cmd.Flags().GetBool("priority"); err != nil {
+		return flags, fmt.Errorf("failed to parse --priority flag: %w", err)
+	}
+	if flags.normal, err = cmd.Flags().GetBool("normal"); err != nil {
+		return flags, fmt.Errorf("failed to parse --normal flag: %w", err)
 	}
 
 	return flags, nil
 }
 
-// completeCmd represented the `complete` command for marking tasks as done
+// completeCmd represents the `complete` command for marking tasks as done
 var completeCmd = &cobra.Command{
 	Use:   "complete",
-	Short: "complete all task",
-	Long:  `Long goes here`,
+	Short: "Complete tasks",
+	Long:  `Mark tasks as complete, by ID or using filters`,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if err := task.BackupDB(); err != nil {
@@ -47,11 +54,24 @@ var completeCmd = &cobra.Command{
 				return fmt.Errorf("--all flag cannot be used with task IDs")
 			}
 
-			if err := task.CompleteAllTasks(); err != nil {
-				return fmt.Errorf("failed to complete all tasks: %w", err)
+			tasks, err := task.GetTasks()
+			if err != nil {
+				return fmt.Errorf("failed to retrieve tasks: %w", err)
 			}
 
-			fmt.Println("all tasks marked complete")
+			for _, t := range tasks {
+				if flags.priority && !t.Priority {
+					continue
+				}
+				if flags.normal && t.Priority {
+					continue
+				}
+				if err := task.CompleteTask(t.ID); err != nil {
+					fmt.Printf("failed to complete task %d: %v\n", t.ID, err)
+				}
+			}
+
+			fmt.Println("Filtered tasks marked complete")
 			return nil
 		}
 
@@ -78,6 +98,8 @@ var completeCmd = &cobra.Command{
 }
 
 func init() {
-	completeCmd.Flags().BoolP("all", "all", false, "complete all tasks")
+	completeCmd.Flags().Bool("all", false, "Complete all tasks (optionally with filters)")
+	completeCmd.Flags().Bool("priority", false, "Complete only high-priority tasks (requires --all)")
+	completeCmd.Flags().Bool("normal", false, "Complete only normal-priority tasks (requires --all)")
 	rootCmd.AddCommand(completeCmd)
 }
