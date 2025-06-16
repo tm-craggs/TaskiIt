@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-type completeFlags struct {
+type reopenFlags struct {
 	all      bool
 	priority bool
 	normal   bool
 }
 
-func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
-	var flags completeFlags
+func getReopenFlags(cmd *cobra.Command) (reopenFlags, error) {
+	var flags reopenFlags
 	var err error
 
 	if flags.all, err = cmd.Flags().GetBool("all"); err != nil {
@@ -31,13 +31,13 @@ func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
 	return flags, nil
 }
 
-var completeCmd = &cobra.Command{
-	Use:   "complete",
-	Short: "Complete tasks",
-	Long:  `Complete one or more tasks by ID, or use filters with --all to bulk-remove.`,
+var reopenCmd = &cobra.Command{
+	Use:   "reopen",
+	Short: "Reopen tasks",
+	Long:  `Mark completed tasks as incomplete.`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		flags, err := getCompleteFlags(cmd)
+		flags, err := getReopenFlags(cmd)
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ var completeCmd = &cobra.Command{
 				return fmt.Errorf("failed to retrieve tasks: %w", err)
 			}
 
-			var completeIDs []int
+			var reopenIDs []int
 			failed := make(map[int]string)
 
 			for _, t := range tasks {
@@ -68,25 +68,25 @@ var completeCmd = &cobra.Command{
 					continue
 				}
 
-				if err := task.CompleteTask(t.ID); err != nil {
+				if err := task.ReopenTask(t.ID); err != nil {
 					failed[t.ID] = err.Error()
 				} else {
-					completeIDs = append(completeIDs, t.ID)
+					reopenIDs = append(reopenIDs, t.ID)
 				}
 			}
 
-			if len(completeIDs) == 0 {
+			if len(reopenIDs) == 0 {
 				return fmt.Errorf("no tasks matched specified filters")
 			}
 
 			label := "tasks"
-			if len(completeIDs) == 1 {
+			if len(reopenIDs) == 1 {
 				label = "task"
 			}
-			fmt.Printf("Completed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(completeIDs), " ", ", ", -1), "[]"))
+			fmt.Printf("Reopened %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(reopenIDs), " ", ", ", -1), "[]"))
 
 			if len(failed) > 0 {
-				fmt.Println("failed to complete tasks:")
+				fmt.Println("failed to reopen tasks:")
 				for id, reason := range failed {
 					fmt.Printf("  - %d: %s\n", id, reason)
 				}
@@ -100,7 +100,7 @@ var completeCmd = &cobra.Command{
 			return fmt.Errorf("failed to back up database: %w", err)
 		}
 
-		var completeIDs []int
+		var reopenIDs []int
 		failed := make(map[int]string)
 
 		for _, arg := range args {
@@ -115,25 +115,25 @@ var completeCmd = &cobra.Command{
 				continue
 			}
 
-			if err := task.CompleteTask(id); err != nil {
+			if err := task.ReopenTask(id); err != nil {
 				failed[id] = err.Error()
 			} else {
-				completeIDs = append(completeIDs, id)
+				reopenIDs = append(reopenIDs, id)
 			}
 		}
 
-		if len(completeIDs) == 0 {
-			return fmt.Errorf("no tasks were marked complete")
+		if len(reopenIDs) == 0 {
+			return fmt.Errorf("no tasks were reopened")
 		}
 
 		label := "tasks"
-		if len(completeIDs) == 1 {
+		if len(reopenIDs) == 1 {
 			label = "task"
 		}
-		fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(completeIDs), " ", ", ", -1), "[]"))
+		fmt.Printf("Reopened %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(reopenIDs), " ", ", ", -1), "[]"))
 
 		if len(failed) > 0 {
-			fmt.Println("failed to complete tasks:")
+			fmt.Println("failed to reopen tasks:")
 			for id, reason := range failed {
 				fmt.Printf("  - %d: %s\n", id, reason)
 			}
@@ -144,10 +144,10 @@ var completeCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(completeCmd)
+	rootCmd.AddCommand(reopenCmd)
 
-	completeCmd.Flags().Bool("all", false, "Apply to all tasks (required for filters or to remove all)")
-	completeCmd.Flags().Bool("priority", false, "Only remove priority tasks")
-	completeCmd.Flags().Bool("normal", false, "Only remove non-priority tasks")
+	reopenCmd.Flags().Bool("all", false, "Apply to all tasks (required for filters or to remove all)")
+	reopenCmd.Flags().Bool("priority", false, "Only remove priority tasks")
+	reopenCmd.Flags().Bool("normal", false, "Only remove non-priority tasks")
 
 }
