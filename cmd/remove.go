@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
+	"github.com/tcraggs/TidyTask/util"
 	"strconv"
+	"strings"
 )
 
 type removeFlags struct {
@@ -41,24 +43,22 @@ func getRemoveFlags(cmd *cobra.Command) (removeFlags, error) {
 var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove tasks",
-	Long:  `Remove a task, by ID or using filters`,
-
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if err := task.BackupDB(); err != nil {
-			return fmt.Errorf("failed to back up database: %w", err)
-		}
-		return nil
-	},
+	Long:  `Remove one or more tasks by ID, or use filters with --all to bulk-remove.`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		flags, err := getRemoveFlags(cmd) // fixed function name
+		flags, err := getRemoveFlags(cmd)
 		if err != nil {
 			return err
 		}
 
-		if flags.all {
-			if len(args) > 0 {
-				return fmt.Errorf("--all flag cannot be used with task IDs")
+		// Case 1: No args — filter-based or full removal
+		if len(args) == 0 {
+			if !flags.all && (flags.priority || flags.normal || flags.complete || flags.open) {
+				return fmt.Errorf("filter flags require --all")
+			}
+
+			if !flags.all {
+				return fmt.Errorf("task ID required")
 			}
 
 			tasks, err := task.GetTasks()
@@ -66,7 +66,17 @@ var removeCmd = &cobra.Command{
 				return fmt.Errorf("failed to retrieve tasks: %w", err)
 			}
 
-			removed := 0
+			if err := task.BackupDB(); err != nil {
+				return fmt.Errorf("failed to back up database: %w", err)
+			}
+			if !util.ConfirmAction("Confirm Removal?") {
+				cmd.SilenceUsage = true
+				return fmt.Errorf("aborted by user")
+			}
+
+			var removedIDs []int
+			failed := make(map[int]string)
+
 			for _, t := range tasks {
 				if flags.priority && !t.Priority {
 					continue
@@ -81,44 +91,90 @@ var removeCmd = &cobra.Command{
 					continue
 				}
 				if err := task.RemoveTask(t.ID); err != nil {
-					fmt.Printf("failed to remove task %d: %v\n", t.ID, err) // fixed message
+					failed[t.ID] = err.Error()
 				} else {
-					removed++
+					removedIDs = append(removedIDs, t.ID)
 				}
 			}
 
-			fmt.Printf("Removed %d tasks\n", removed)
+			if len(removedIDs) == 0 {
+				return fmt.Errorf("no tasks matched specified filters")
+			}
+
+			label := "tasks"
+			if len(removedIDs) == 1 {
+				label = "task"
+			}
+			fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(removedIDs), " ", ", ", -1), "[]"))
+
+			if len(failed) > 0 {
+				fmt.Println("failed to remove tasks:")
+				for id, reason := range failed {
+					fmt.Printf("  - %d: %s\n", id, reason)
+				}
+			}
+
 			return nil
 		}
 
-		if len(args) == 0 {
-			return fmt.Errorf("task ID required")
+		// Case 2: Arguments given — remove by task IDs
+		if err := task.BackupDB(); err != nil {
+			return fmt.Errorf("failed to back up database: %w", err)
+		}
+		if !util.ConfirmAction("Confirm Removal?") {
+			cmd.SilenceUsage = true
+			return fmt.Errorf("aborted by user")
 		}
 
-		id, err := strconv.Atoi(args[0])
-		if err != nil {
-			return fmt.Errorf("failed to parse task ID: %w", err)
+		var removedIDs []int
+		failed := make(map[int]string)
+
+		for _, arg := range args {
+			id, err := strconv.Atoi(arg)
+			if err != nil {
+				fmt.Printf("invalid task ID '%s': %v\n", arg, err)
+				continue
+			}
+
+			if err := task.CheckTaskExists(id); err != nil {
+				failed[id] = err.Error()
+				continue
+			}
+
+			if err := task.RemoveTask(id); err != nil {
+				failed[id] = err.Error()
+			} else {
+				removedIDs = append(removedIDs, id)
+			}
 		}
 
-		if err := task.CheckTaskExists(id); err != nil {
-			return fmt.Errorf("task does not exist: %w", err)
+		if len(removedIDs) == 0 {
+			return fmt.Errorf("no tasks were removed")
 		}
 
-		if err := task.RemoveTask(id); err != nil {
-			return fmt.Errorf("failed to remove task: %w", err)
+		label := "tasks"
+		if len(removedIDs) == 1 {
+			label = "task"
+		}
+		fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(removedIDs), " ", ", ", -1), "[]"))
+
+		if len(failed) > 0 {
+			fmt.Println("failed to remove tasks:")
+			for id, reason := range failed {
+				fmt.Printf("  - %d: %s\n", id, reason)
+			}
 		}
 
-		fmt.Println("Task removed")
 		return nil
 	},
 }
 
 func init() {
-	removeCmd.Flags().BoolP("all", "a", false, "Remove all tasks (optionally with filters)")
-	removeCmd.Flags().BoolP("priority", "p", false, "Remove only high-priority tasks (requires --all)")
-	removeCmd.Flags().BoolP("normal", "n", false, "Remove only normal-priority tasks (requires --all)")
-	removeCmd.Flags().BoolP("complete", "C", false, "Remove only complete tasks (optionally with filters)")
-	removeCmd.Flags().BoolP("open", "o", false, "Remove only open tasks (optionally with filters)")
-
 	rootCmd.AddCommand(removeCmd)
+
+	removeCmd.Flags().Bool("all", false, "Apply to all tasks (required for filters or to remove all)")
+	removeCmd.Flags().Bool("priority", false, "Only remove priority tasks")
+	removeCmd.Flags().Bool("normal", false, "Only remove non-priority tasks")
+	removeCmd.Flags().Bool("complete", false, "Only remove completed tasks")
+	removeCmd.Flags().Bool("open", false, "Only remove open tasks")
 }
