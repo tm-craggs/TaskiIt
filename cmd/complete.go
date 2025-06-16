@@ -130,7 +130,7 @@ var completeCmd = &cobra.Command{
 		if len(completeIDs) == 1 {
 			label = "task"
 		}
-		fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(completeIDs), " ", ", ", -1), "[]"))
+		fmt.Printf("Completed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(completeIDs), " ", ", ", -1), "[]"))
 
 		if len(failed) > 0 {
 			fmt.Println("failed to complete tasks:")
