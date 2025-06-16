@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
 	"strconv"
+	"strings"
 )
 
 type completeFlags struct {
@@ -30,18 +31,10 @@ func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
 	return flags, nil
 }
 
-// completeCmd represents the `complete` command for marking tasks as done
 var completeCmd = &cobra.Command{
 	Use:   "complete",
 	Short: "Complete tasks",
-	Long:  `Mark tasks as complete, by ID or using filters`,
-
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if err := task.BackupDB(); err != nil {
-			return fmt.Errorf("failed to back up database: %w", err)
-		}
-		return nil
-	},
+	Long:  `Complete one or more tasks by ID, or use filters with --all to bulk-remove.`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 		flags, err := getCompleteFlags(cmd)
@@ -49,9 +42,14 @@ var completeCmd = &cobra.Command{
 			return err
 		}
 
-		if flags.all {
-			if len(args) > 0 {
-				return fmt.Errorf("--all flag cannot be used with task IDs")
+		// Case 1: No args — filter-based or full removal
+		if len(args) == 0 {
+			if !flags.all && (flags.priority || flags.normal) {
+				return fmt.Errorf("filter flags require --all")
+			}
+
+			if !flags.all {
+				return fmt.Errorf("task ID required")
 			}
 
 			tasks, err := task.GetTasks()
@@ -59,7 +57,9 @@ var completeCmd = &cobra.Command{
 				return fmt.Errorf("failed to retrieve tasks: %w", err)
 			}
 
-			completed := 0
+			var completeIDs []int
+			failed := make(map[int]string)
+
 			for _, t := range tasks {
 				if flags.priority && !t.Priority {
 					continue
@@ -68,46 +68,86 @@ var completeCmd = &cobra.Command{
 					continue
 				}
 
-				if t.Complete {
-					continue
-				}
-
 				if err := task.CompleteTask(t.ID); err != nil {
-					fmt.Printf("failed to complete task %d: %v\n", t.ID, err)
+					failed[t.ID] = err.Error()
 				} else {
-					completed++
+					completeIDs = append(completeIDs, t.ID)
 				}
 			}
 
-			fmt.Printf("Completed %d tasks\n", completed)
+			if len(completeIDs) == 0 {
+				return fmt.Errorf("no tasks matched specified filters")
+			}
+
+			label := "tasks"
+			if len(completeIDs) == 1 {
+				label = "task"
+			}
+			fmt.Printf("Completed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(completeIDs), " ", ", ", -1), "[]"))
+
+			if len(failed) > 0 {
+				fmt.Println("failed to complete tasks:")
+				for id, reason := range failed {
+					fmt.Printf("  - %d: %s\n", id, reason)
+				}
+			}
+
 			return nil
 		}
 
-		if len(args) == 0 {
-			return fmt.Errorf("task ID required")
+		// Case 2: Arguments given — remove by task IDs
+		if err := task.BackupDB(); err != nil {
+			return fmt.Errorf("failed to back up database: %w", err)
 		}
 
-		id, err := strconv.Atoi(args[0])
-		if err != nil {
-			return fmt.Errorf("failed to parse task ID: %w", err)
+		var completeIDs []int
+		failed := make(map[int]string)
+
+		for _, arg := range args {
+			id, err := strconv.Atoi(arg)
+			if err != nil {
+				fmt.Printf("invalid task ID '%s': %v\n", arg, err)
+				continue
+			}
+
+			if err := task.CheckTaskExists(id); err != nil {
+				failed[id] = err.Error()
+				continue
+			}
+
+			if err := task.CompleteTask(id); err != nil {
+				failed[id] = err.Error()
+			} else {
+				completeIDs = append(completeIDs, id)
+			}
 		}
 
-		if err := task.CheckTaskExists(id); err != nil {
-			return fmt.Errorf("task does not exist: %w", err)
+		if len(completeIDs) == 0 {
+			return fmt.Errorf("no tasks were marked complete")
 		}
 
-		if err := task.CompleteTask(id); err != nil {
-			return fmt.Errorf("failed to complete task: %w", err)
+		label := "tasks"
+		if len(completeIDs) == 1 {
+			label = "task"
+		}
+		fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(completeIDs), " ", ", ", -1), "[]"))
+
+		if len(failed) > 0 {
+			fmt.Println("failed to complete tasks:")
+			for id, reason := range failed {
+				fmt.Printf("  - %d: %s\n", id, reason)
+			}
 		}
 
-		fmt.Println("Task completed successfully")
 		return nil
 	},
 }
 
 func init() {
-	completeCmd.Flags().BoolP("all", "a", false, "Complete all tasks (optionally with filters)")
-	completeCmd.Flags().BoolP("priority", "p", false, "Complete only high-priority tasks (requires --all)")
-	completeCmd.Flags().BoolP("normal", "n", false, "Complete only normal-priority tasks (requires --all)")
 	rootCmd.AddCommand(completeCmd)
+
+	completeCmd.Flags().Bool("all", false, "Apply to all tasks (required for filters or to remove all)")
+	completeCmd.Flags().Bool("priority", false, "Only remove priority tasks")
+	completeCmd.Flags().Bool("normal", false, "Only remove non-priority tasks")
+
 }
