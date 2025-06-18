@@ -62,43 +62,6 @@ func RemoveTask(id int) error {
 	return err
 }
 
-func RemoveAllTasks() error {
-	// remove all items from database
-	_, err := DB.Exec("DELETE FROM tasks")
-	if err != nil {
-		return err
-	}
-
-	// reset auto-increment IDs to 1
-	_, err = DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'tasks'")
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func RemoveInputTasks(tasks []Task) error {
-	for _, t := range tasks {
-		_, err := DB.Exec("DELETE FROM tasks WHERE id = ?", t.ID)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func RemoveAllCompleteTasks() error {
-	// remove all complete tasks
-	_, err := DB.Exec("DELETE FROM tasks WHERE complete = 1")
-	if err != nil {
-		return err
-	}
-
-	return nil
-
-}
-
 func CompleteTask(id int) error {
 	currentDate := time.Now().Format("2006-01-02")
 	_, err := DB.Exec(`
@@ -114,28 +77,8 @@ func CompleteTask(id int) error {
 	return err
 }
 
-func CompleteAllTasks() error {
-	currentDate := time.Now().Format("2006-01-02")
-
-	_, err := DB.Exec(`
-		UPDATE tasks
-		SET complete = 1,
-		    complete_date = CASE
-		        WHEN complete_date IS NULL THEN ?
-		        ELSE complete_date
-		    END
-	`, currentDate)
-
-	return err
-}
-
 func ReopenTask(id int) error {
 	_, err := DB.Exec("UPDATE tasks SET complete = 0, complete_date = NULL WHERE id = ?", id)
-	return err
-}
-
-func ReopenAllTasks() error {
-	_, err := DB.Exec("UPDATE tasks SET complete = 0, complete_date = NULL")
 	return err
 }
 
