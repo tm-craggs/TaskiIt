@@ -16,10 +16,9 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 Contributions are encouraged and will be welcome after the first release. See **Wishlist** for future ideas.
 
 ### Pre-Release TODO
-- Change due date in database to use NULL instead of empty string
-- Harden error handling for user inputs
-- Improve documentation and `--help` output
-- Package for release and ensure README has installation instructions for supported platforms
+- Rework reopen and complete to function the same as remove
+- Finish documentation
+- Package for release
 
 ### Wishlist (Post-Release Ideas)
 - Add support for a configuration file so that users can control the colour scheme and column layout.
