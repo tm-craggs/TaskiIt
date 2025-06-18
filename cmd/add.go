@@ -33,7 +33,7 @@ func getAddFlags(cmd *cobra.Command) (addFlags, error) {
 // addCmd represents the add subcommand
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "add all new task to your to-do list",
+	Short: "Add a new task to your to-do list",
 	Long:  `Long description goes here`,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -79,8 +79,8 @@ var addCmd = &cobra.Command{
 }
 
 func init() {
-	addCmd.Flags().StringP("due", "d", "", "Set all due (e.g. 2025-05-14)")
-	addCmd.Flags().BoolP("priority", "p", false, "Mark the task as high priority")
+	addCmd.Flags().StringP("due", "d", "", "add a due date to task (DD-MM-YYYY)")
+	addCmd.Flags().BoolP("priority", "p", false, "mark the task as high priority")
 
 	rootCmd.AddCommand(addCmd)
 }
