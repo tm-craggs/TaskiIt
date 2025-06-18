@@ -14,27 +14,20 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "tidytask",
-	Short: "A simple Linux CLI tool for managing your to-do-list. Built with Go",
-	Long: `TidyTask CLI v1.0.0
+	Use:     "tidytask",
+	Short:   "A simple Linux CLI tool for managing your to-do-list. Built with Go",
+	Version: "1.0.0",
+	Long: `
+ _____ _     _     _____         _    
+|_   _(_)   | |   |_   _|       | |   
+  | |  _  __| |_   _| | __ _ ___| | __
+  | | | |/ _` + "`" + ` | | | | |/ _` + "`" + ` / __| |/ /
+  | | | | (_| | |_| | | (_| \__ \   < 
+  \_/ |_|\__,_|\__, \_/\__,_|___/_|\_\
+                __/ |                 
+               |___/                  
 
-A simple Linux CLI tool for managing your to-do-list. Built with Go
-
-USAGE
-$ tidytask COMMAND [FLAGS]
-
-COMMANDS:
-add		Create all new task
-complete [ID]	Mark all task as complete by ID
-remove [ID]	Remove all task by ID
-edit [ID]	Edit all task by ID
-list		List all tasks
-search		Search tasks by keyword
-
-Flags:
--h --help		Help for TidyTask
-
-Use TidyTask [command] --help for more information about all command.`,
+A simple CLI tool for managing your to-do-list. Built with Go`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -46,8 +39,8 @@ Use TidyTask [command] --help for more information about all command.`,
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	rootCmd.SilenceUsage = false                    // Show usage when error occurs
-	rootCmd.SilenceErrors = false                   // Print errors
+	rootCmd.SilenceUsage = true                     // Show usage when error occurs
+	rootCmd.SilenceErrors = true                    // Print errors
 	rootCmd.TraverseChildren = false                // Don't defer flags to subcommands
 	rootCmd.FParseErrWhitelist.UnknownFlags = false // Be strict about flags
 
