@@ -7,6 +7,7 @@ import (
 	"github.com/tcraggs/TidyTask/util"
 )
 
+// create struct that defines the available flags for list command
 type listFlags struct {
 	priority bool
 	complete bool
@@ -14,6 +15,7 @@ type listFlags struct {
 	normal   bool
 }
 
+// helper function to parse flags with error handling
 func getListFlags(cmd *cobra.Command) (listFlags, error) {
 	var flags listFlags
 	var err error
@@ -34,32 +36,52 @@ func getListFlags(cmd *cobra.Command) (listFlags, error) {
 	return flags, nil
 }
 
+// listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List all tasks",
-	Long:  `List all tasks`,
+	Short: "Display tasks in your to-do list",
+	Long: `The 'list' command displays all tasks in your to-do list. 
+
+Optionally, you can use flags to to narrow the results and only show tasks that meet certain criteria.`,
+
+	Example: `  tidytask list
+  > Show all tasks
+  
+  tidytask list --priority
+  > Show only high priority tasks
+
+  tidytask list --complete --priority
+  > Show only completed, high priority tasks`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		// get flags
 		flags, err := getListFlags(cmd)
 		if err != nil {
 			return err
 		}
 
+		// get tasks
 		tasks, err := task.GetTasks()
 		if err != nil {
 			return fmt.Errorf("failed to get tasks: %w", err)
 		}
 
+		// call PrintTasks, passing in task list and flags
 		util.PrintTasks(util.FilterTasks(tasks, flags.complete, flags.priority, flags.open, flags.normal))
 		return nil
 	},
 }
 
+// command initialisation
 func init() {
-	rootCmd.AddCommand(listCmd)
 
-	listCmd.Flags().BoolP("priority", "p", false, "Filter by priority")
-	listCmd.Flags().BoolP("complete", "c", false, "Filter by complete")
-	listCmd.Flags().BoolP("open", "o", false, "Filter by open task")
-	listCmd.Flags().BoolP("normal", "n", false, "Filter by normal priority")
+	// define flags and add subcommand to root
+
+	listCmd.Flags().BoolP("priority", "p", false, "Show only high priority tasks")
+	listCmd.Flags().BoolP("complete", "c", false, "Show only complete tasks ")
+	listCmd.Flags().BoolP("open", "o", false, "Show only open (incomplete) tasks")
+	listCmd.Flags().BoolP("normal", "n", false, "Show only normal priority tasks")
+
+	rootCmd.AddCommand(listCmd)
 }
