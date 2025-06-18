@@ -58,7 +58,7 @@ var addCmd = &cobra.Command{
 		return nil
 	},
 
-	//
+	// add command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		// check if task name has been provided
@@ -95,6 +95,7 @@ var addCmd = &cobra.Command{
 			return fmt.Errorf("failed to add task: %w", err)
 		}
 
+		// exit
 		fmt.Println("Task Added")
 		return nil
 	},
