@@ -6,6 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -13,12 +14,30 @@ import (
 // DB is a global variable representing the database connection
 var DB *sql.DB
 
+func getDBPath() string {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal("Failed to get filepath for config directory", err)
+	}
+	appDir := filepath.Join(configDir, "tidytask")
+
+	// create app directory if it doesn't exist
+	if err := os.MkdirAll(appDir, 0755); err != nil {
+		log.Fatal("Failed to create config directory: ", err)
+	}
+
+	return filepath.Join(appDir, "tasks.db")
+}
+
 // InitDB creates the SQLite database by creating the database file and the tasks table if it does not exist
-func InitDB() {
+func InitDB() error {
 
 	// open, or create if not exists, the SQLite database file "tasks.db"
 	var err error
-	DB, err = sql.Open("sqlite3", "./tasks.db")
+
+	// create database at dbPath
+	dbPath := getDBPath()
+	DB, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,8 +56,23 @@ func InitDB() {
 	// execute the SQL statement, if error: log and exit
 	_, err = DB.Exec(createTable)
 	if err != nil {
-		log.Fatal("Failed to create table:", err)
+		return fmt.Errorf("failed to create table: %w", err)
 	}
+
+	return nil
+}
+
+// CloseDB safely closes the database connection, if it had been opened.
+// it returns any error encountered during close, and if the DB was never initialised, it returns nil
+// this function is always called on exit of tidytask
+func CloseDB() error {
+	// check if DB connection exists before trying to close it
+	if DB != nil {
+		// close the connection and return any errors
+		return DB.Close()
+	}
+	// nothing to close, return nil
+	return nil
 }
 
 // CheckTaskExists checks if a task with the given ID exists in the database.
@@ -283,34 +317,43 @@ func SearchTasks(keyword string, searchID bool, searchTitle bool, searchDue bool
 // It reads the original database file and writes its contents to a new file "tasks.db.bak".
 func BackupDB() error {
 
+	dbPath := getDBPath()
+	backupPath := dbPath + ".bak"
+
 	// read contents of current database file into memory
-	input, err := os.ReadFile("tasks.db")
+	input, err := os.ReadFile(dbPath)
 	if err != nil {
 		return err
 	}
 
 	// write the contents into the backup file with permission set to 0644
-	return os.WriteFile("tasks.db.bak", input, 0644)
+	return os.WriteFile(backupPath, input, 0644)
 }
 
 // RestoreBackup replaces the current database file with the backup copy.
 // After successfully restoring, it deletes the backup file.
 func RestoreBackup() error {
 
+	// get path for DB
+	dbPath := getDBPath()
+
+	// get path for backup
+	backupPath := dbPath + ".bak"
+
 	// read contents of backup database file into memory
-	input, err := os.ReadFile("tasks.db.bak")
+	input, err := os.ReadFile(backupPath)
 	if err != nil {
 		return err
 	}
 
 	// overwrite the contents of main database with backup contents
-	err = os.WriteFile("tasks.db", input, 0644)
+	err = os.WriteFile(dbPath, input, 0644)
 	if err != nil {
 		return err
 	}
 
 	// delete the backup file after successful restore
-	err = os.Remove("tasks.db.bak")
+	err = os.Remove(backupPath)
 
 	// log a warning if backup could not be deleted, but do not treat as failure
 	if err != nil {
