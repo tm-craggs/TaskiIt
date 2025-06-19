@@ -80,17 +80,26 @@ When combining constraints, such as --priority and --complete, it will only remo
 			return err
 		}
 
+		// check flags have not been used with task IDs
+		if len(args) > 0 && (flags.all || flags.priority || flags.normal || flags.complete || flags.open) {
+			return fmt.Errorf("cannot use task IDs and batch operation flags together")
+		}
+
+		// check for flag conflicts
+		if flags.priority && flags.normal {
+			return fmt.Errorf("conflicting flags: cannot use --priority and --normal together")
+		}
+
+		if flags.complete && flags.open {
+			return fmt.Errorf("conflicting flags: cannot use --complete and --open together")
+		}
+
 		// filter based removal
 		if len(args) == 0 {
 
 			// check for all flag if filter flags have been used
 			if !flags.all && (flags.priority || flags.normal || flags.complete || flags.open) {
-				return fmt.Errorf("filter flags require --all")
-			}
-
-			// if no all flag, check task ID has been provided
-			if !flags.all {
-				return fmt.Errorf("task ID required")
+				return fmt.Errorf("constraint flags require --all")
 			}
 
 			// get tasks
