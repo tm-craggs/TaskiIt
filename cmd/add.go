@@ -34,9 +34,17 @@ func getAddFlags(cmd *cobra.Command) (addFlags, error) {
 
 // addCmd represents the add subcommand
 var addCmd = &cobra.Command{
-	Use:   "add [task name]... [flags]",
+	Use:   "add [task title] [flags]",
 	Short: "Add a new task to your to-do list",
-	Long:  `Add a new task to your to-do list. Optionally, use --due to add a due date, and --priority to mark task as high priority`,
+	Long: `The 'add' command adds a new task to your to-do list.
+
+Tasks have 5 fields:
+- ID: The unique identifier for the task. This is automatically assigned.
+- Title: The description of the task. This field is mandatory, the task title should follow the add command.
+- Due Date: The due date of the task. This field is optional and can be set using the --due flag. (format: YYYY-MM-DD)
+- Complete: Indicates whether a task is open (incomplete) or complete. New tasks are open by default
+- Priority: A task can be normal or high priority. Use the --priority flag to mark it as high.`,
+
 	Example: `  tidytask add "Finish Homework"
   > Add Finish Homework to your to-do list
 
