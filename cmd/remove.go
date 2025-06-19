@@ -74,6 +74,12 @@ When combining constraints, such as --priority and --complete, it will only remo
 
 	// main command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		// check args
+		if len(args) == 0 {
+			return fmt.Errorf("no arguments provided; task ID or --all flag required")
+		}
+
 		// get flags
 		flags, err := getRemoveFlags(cmd)
 		if err != nil {
@@ -110,7 +116,7 @@ When combining constraints, such as --priority and --complete, it will only remo
 
 			// backup database
 			if err := task.BackupDB(); err != nil {
-				return fmt.Errorf("failed to back up database: %w", err)
+				fmt.Printf("Warning: failed to back up database: %v", err)
 			}
 
 			// prompt for confirmation

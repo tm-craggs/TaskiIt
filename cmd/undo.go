@@ -21,6 +21,12 @@ After running the undo command, it becomes unavailable until a new change is mad
 
 	// confirm action before running command
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+
+		// check args
+		if len(args) > 0 {
+			return fmt.Errorf("unexpected arguments: %v; use --help for usage information", args)
+		}
+
 		if !util.ConfirmAction("Confirm Undo?") {
 			return fmt.Errorf("aborted by user")
 		}

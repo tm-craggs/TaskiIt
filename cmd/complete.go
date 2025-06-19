@@ -60,6 +60,12 @@ You must only use one method. Supplying task IDs together with the --all flag fo
 
 	// main command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		// check args
+		if len(args) == 0 {
+			return fmt.Errorf("no arguments provided; task ID or --all flag required")
+		}
+
 		// get flags
 		flags, err := getCompleteFlags(cmd)
 		if err != nil {
@@ -76,6 +82,11 @@ You must only use one method. Supplying task IDs together with the --all flag fo
 			return fmt.Errorf("conflicting flags: cannot use --priority and --normal together")
 		}
 
+		// backup database
+		if err := task.BackupDB(); err != nil {
+			fmt.Printf("Warning: failed to back up database: %v", err)
+		}
+
 		// filter based removal
 		if len(args) == 0 {
 
@@ -88,11 +99,6 @@ You must only use one method. Supplying task IDs together with the --all flag fo
 			tasks, err := task.GetTasks()
 			if err != nil {
 				return fmt.Errorf("failed to retrieve tasks: %w", err)
-			}
-
-			// backup database
-			if err := task.BackupDB(); err != nil {
-				return fmt.Errorf("failed to back up database: %w", err)
 			}
 
 			// create list of task IDs that have been completed
@@ -158,11 +164,6 @@ You must only use one method. Supplying task IDs together with the --all flag fo
 		}
 
 		// argument given, complete by task IDs
-
-		// backup database
-		if err := task.BackupDB(); err != nil {
-			return fmt.Errorf("failed to back up database: %w", err)
-		}
 
 		// create list of task IDs that have been completed
 		var completeIDs []int

@@ -55,6 +55,11 @@ Optionally, you can use flags to to narrow the results and only show tasks that 
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 
+		// check args
+		if len(args) > 0 {
+			return fmt.Errorf("unexpected arguments: %v; use --help for usage information", args)
+		}
+
 		// get flags
 		flags, err := getListFlags(cmd)
 		if err != nil {

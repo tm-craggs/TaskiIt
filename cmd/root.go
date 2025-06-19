@@ -31,8 +31,17 @@ A simple CLI tool for managing your to-do-list. Built with Go`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		task.InitDB()
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if err := task.InitDB(); err != nil {
+			return fmt.Errorf("DB creation error: %w", err)
+		}
+		return nil
+	},
+	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+		if err := task.CloseDB(); err != nil {
+			return fmt.Errorf("DB closing error: %v\n", err)
+		}
+		return nil
 	},
 }
 

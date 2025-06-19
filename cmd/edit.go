@@ -62,25 +62,16 @@ Specify the task ID and pass flags for the the details you wish to change.`,
   tidytask edit 5 --title "Clean Room" --due 02-01-2006
 	Change the title of task 5 to Clean Room and change the due date to 2nd of January 2006`,
 
-	// backup database and confirm action before running command
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if err := task.BackupDB(); err != nil {
-			return fmt.Errorf("failed to backup database: %w", err)
-		}
-
-		if !util.ConfirmAction("Confirm Edit?") {
-			return fmt.Errorf("aborted by user")
-		}
-
-		return nil
-	},
-
 	// main command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		// check if task ID has been provided
+		// check args
 		if len(args) == 0 {
-			return fmt.Errorf("task ID required")
+			return fmt.Errorf("no arguments provided; task ID required")
+		}
+
+		if len(args) > 1 {
+			return fmt.Errorf("accepts 1 argument, received %d; use quotes for multi-word input", len(args))
 		}
 
 		// convert task ID to int
@@ -98,6 +89,15 @@ Specify the task ID and pass flags for the the details you wish to change.`,
 		flags, err := getEditFlags(cmd)
 		if err != nil {
 			return err
+		}
+
+		// backup database
+		if err := task.BackupDB(); err != nil {
+			fmt.Printf("Warning: failed to back up database: %v", err)
+		}
+
+		if !util.ConfirmAction("Confirm edit?") {
+			return fmt.Errorf("aborted by user")
 		}
 
 		// update task title if title flagged

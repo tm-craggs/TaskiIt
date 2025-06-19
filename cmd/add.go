@@ -56,15 +56,6 @@ Tasks have 5 fields:
   tidytask add Finish Project --due 02-01-2006 --priority
   > Add "Finish Project" to your to-do list with 2nd of January 2006 as the due date and mark task as high priority`,
 
-	// backup database before running command
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		err := task.BackupDB()
-		if err != nil {
-			return fmt.Errorf("failed to back up database: %w", err)
-		}
-		return nil
-	},
-
 	// command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -99,6 +90,11 @@ Tasks have 5 fields:
 			Due:      flags.due,
 			Complete: false,
 			Priority: flags.priority,
+		}
+
+		// backup database
+		if err := task.BackupDB(); err != nil {
+			fmt.Printf("Warning: failed to back up database: %v", err)
 		}
 
 		// add task to database

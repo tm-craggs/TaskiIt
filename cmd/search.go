@@ -70,9 +70,13 @@ You can also narrow results using constraint flags, which show only tasks that m
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		// check if keyword provided
+		// check args
 		if len(args) == 0 {
-			return fmt.Errorf("keyword required")
+			return fmt.Errorf("no arguments provided; keyword required")
+		}
+
+		if len(args) > 1 {
+			return fmt.Errorf("accepts 1 argument, received %d; use quotes for multi-word input", len(args))
 		}
 
 		// get flags
