@@ -1,4 +1,4 @@
-module github.com/tcraggs/tidytask
+module github.com/tm-craggs/tidytask
 
 go 1.24.2
 

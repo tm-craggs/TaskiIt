@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/tcraggs/tidytask/task"
-	"github.com/tcraggs/tidytask/util"
+	"github.com/tm-craggs/tidytask/task"
+	"github.com/tm-craggs/tidytask/util"
 	"sort"
 	"strconv"
 	"strings"

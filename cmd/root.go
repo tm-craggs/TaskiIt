@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tcraggs/tidytask/task"
+	"github.com/tm-craggs/tidytask/task"
 )
 
 // rootCmd represents the base command when called without any subcommands

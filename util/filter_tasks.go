@@ -1,6 +1,6 @@
 package util
 
-import "github.com/tcraggs/tidytask/task"
+import "github.com/tm-craggs/tidytask/task"
 
 // FilterTasks takes a slice of Task structs and returns a new slice
 // only tasks that satisfy all enabled filters are added to the new slice

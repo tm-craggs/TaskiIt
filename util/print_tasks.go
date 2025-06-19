@@ -9,7 +9,7 @@ import (
 
 	"github.com/muesli/termenv"         // for colour styling in terminal output
 	"github.com/olekukonko/tablewriter" // for rendering tables in terminal
-	"github.com/tcraggs/tidytask/task"
+	"github.com/tm-craggs/tidytask/task"
 )
 
 var (
