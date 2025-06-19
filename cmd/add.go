@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
 	"github.com/tcraggs/TidyTask/util"
-	"strings"
 )
 
 // create struct that defines the available flags for add command
@@ -69,9 +68,13 @@ Tasks have 5 fields:
 	// command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		// check if task name has been provided
+		// check args
 		if len(args) == 0 {
-			return fmt.Errorf("no task name provided")
+			return fmt.Errorf("no arguments provided; task name required")
+		}
+
+		if len(args) > 1 {
+			return fmt.Errorf("accepts 1 argument, received %d; use quotes for multi-word input", len(args))
 		}
 
 		// get flags
@@ -88,7 +91,7 @@ Tasks have 5 fields:
 		}
 
 		// join each args value to make task title
-		title := strings.Join(args, " ")
+		title := args[0]
 
 		// create new task with input values
 		newTask := task.Task{
@@ -104,7 +107,7 @@ Tasks have 5 fields:
 		}
 
 		// exit
-		fmt.Println("Task Added")
+		fmt.Println("Task added")
 		return nil
 	},
 }
