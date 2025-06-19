@@ -38,16 +38,16 @@ var addCmd = &cobra.Command{
 	Short: "Add a new task to your to-do list",
 	Long:  `Add a new task to your to-do list. Optionally, use --due to add a due date, and --priority to mark task as high priority`,
 	Example: `  tidytask add "Finish Homework"
-    Add Finish Homework to your to-do list
+  > Add Finish Homework to your to-do list
 
   tidytask add Submit Essay --due 02-01-2006
-	Add "Submit Essay" to your to-do list with 2nd of January 2006 as the due date
+  > Add "Submit Essay" to your to-do list with 2nd of January 2006 as the due date
 
   tidytask add E-Mail boss --priority
-    Add "E-Mail boss" to your to-do list and mark task as high priority
+  > Add "E-Mail boss" to your to-do list and mark task as high priority
 
   tidytask add Finish Project --due 02-01-2006 --priority
-    Add "Finish Project" to your to-do list with 2nd of January 2006 as the due date and mark task as high priority`,
+  > Add "Finish Project" to your to-do list with 2nd of January 2006 as the due date and mark task as high priority`,
 
 	// backup database before running command
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -58,7 +58,7 @@ var addCmd = &cobra.Command{
 		return nil
 	},
 
-	// add command logic
+	// command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		// check if task name has been provided
@@ -101,7 +101,11 @@ var addCmd = &cobra.Command{
 	},
 }
 
+// command initialisation
 func init() {
+
+	// define flags and add subcommand to root
+
 	addCmd.Flags().StringP("due", "d", "", "Add a due date to task (DD-MM-YYYY)")
 	addCmd.Flags().BoolP("priority", "p", false, "Mark task as high priority")
 
