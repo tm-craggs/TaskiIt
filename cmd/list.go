@@ -61,6 +61,15 @@ Optionally, you can use flags to to narrow the results and only show tasks that 
 			return err
 		}
 
+		// check for flag conflicts
+		if flags.priority && flags.normal {
+			return fmt.Errorf("conflicting flags: cannot use --priority and --normal together")
+		}
+
+		if flags.complete && flags.open {
+			return fmt.Errorf("conflicting flags: cannot use --complete and --open together")
+		}
+
 		// get tasks
 		tasks, err := task.GetTasks()
 		if err != nil {
