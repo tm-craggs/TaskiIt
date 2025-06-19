@@ -57,7 +57,7 @@ var searchCmd = &cobra.Command{
 By default, the keyword is matched against all fields: ID, title, and due date. 
 You can narrow the scope by explicitly specifying which fields to search using the --id, --title, and --due flags
 
-"You can also narrow results using constraint flags, which show only tasks that meet the criteria you specify."`,
+You can also narrow results using constraint flags, which show only tasks that meet the criteria you specify.`,
 
 	Example: `  tidytask search essay
   > Search all fields for the word 'essay'
