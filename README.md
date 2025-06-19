@@ -17,6 +17,7 @@ Contributions are encouraged and will be welcome after the first release. See **
 
 ### Pre-Release TODO
 - Rework reopen and complete to function the same as remove
+- Ensure all necessary commands only take in one input, and throw error otherwise
 - Finish documentation
 - Package for release
 
