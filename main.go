@@ -12,7 +12,7 @@ If not, see <https://www.gnu.org/licenses/gpl-3.0.html>
 package main
 
 import (
-	"github.com/tcraggs/TidyTask/cmd"
+	"github.com/tcraggs/tidytask/cmd"
 )
 
 func main() {
