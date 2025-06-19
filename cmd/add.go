@@ -40,7 +40,7 @@ var addCmd = &cobra.Command{
 
 Tasks have 5 fields:
 - ID: The unique identifier for the task. This is automatically assigned.
-- Title: The description of the task. This field is mandatory, the task title should follow the add command.
+- Title: The task description. This field is mandatory, use quotes for multi-word titles.
 - Due Date: The due date of the task. This field is optional and can be set using the --due flag. (format: YYYY-MM-DD)
 - Complete: Indicates whether a task is open (incomplete) or complete. New tasks are open by default
 - Priority: A task can be normal or high priority. Use the --priority flag to mark it as high.`,
