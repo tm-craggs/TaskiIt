@@ -5,10 +5,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tcraggs/TidyTask/task"
 	"github.com/tcraggs/TidyTask/util"
+	"sort"
 	"strconv"
 	"strings"
 )
 
+// create struct that defines the available flags for remove command
 type removeFlags struct {
 	all      bool
 	complete bool
@@ -17,6 +19,7 @@ type removeFlags struct {
 	normal   bool
 }
 
+// helper function to parse flags with error handling
 func getRemoveFlags(cmd *cobra.Command) (removeFlags, error) {
 	var flags removeFlags
 	var err error
@@ -40,44 +43,83 @@ func getRemoveFlags(cmd *cobra.Command) (removeFlags, error) {
 	return flags, nil
 }
 
+// removeCmd represents the remove subcommand
 var removeCmd = &cobra.Command{
-	Use:   "remove",
-	Short: "Remove tasks",
-	Long:  `Remove one or more tasks by ID, or use filters with --all to bulk-remove.`,
+	Use:   "remove [ID...] \n  tidytask remove --all [flags]",
+	Short: "Remove tasks from your to-do list",
+	Long: `The 'remove' command allows you to delete tasks from your to-do list.
 
+You can remove tasks in two ways:
+1. By specifying one or more task IDs directly
+2. Batch removal using the --all flag and optionally applying constraints, such as --priority.
+This limits the scope of the removal batch operation to tasks meeting the given criteria. 
+
+You must only use one method. Supplying task IDs together with the --all flag for batch removal causes an error.
+
+When combining constraints, such as --priority and --complete, it will only remove tasks that meet all conditions.`,
+	Example: `  tidytask remove 1
+  > Remove task 1
+
+  tidytask remove 1 2 3
+  > Remove tasks 1, 2 and 3
+
+  tidytask remove --all
+  > Remove all tasks
+
+  tidytask remove --all --priority
+  > Remove all high priority tasks
+
+  tidytask remove --all --priority --complete
+  > Remove all tasks that are high priority AND complete`,
+
+	// main command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// get flags
 		flags, err := getRemoveFlags(cmd)
 		if err != nil {
 			return err
 		}
 
-		// Case 1: No args — filter-based or full removal
+		// filter based removal
 		if len(args) == 0 {
+
+			// check for all flag if filter flags have been used
 			if !flags.all && (flags.priority || flags.normal || flags.complete || flags.open) {
 				return fmt.Errorf("filter flags require --all")
 			}
 
+			// if no all flag, check task ID has been provided
 			if !flags.all {
 				return fmt.Errorf("task ID required")
 			}
 
+			// get tasks
 			tasks, err := task.GetTasks()
 			if err != nil {
 				return fmt.Errorf("failed to retrieve tasks: %w", err)
 			}
 
+			// backup database
 			if err := task.BackupDB(); err != nil {
 				return fmt.Errorf("failed to back up database: %w", err)
 			}
+
+			// prompt for confirmation
 			if !util.ConfirmAction("Confirm Removal?") {
 				cmd.SilenceUsage = true
 				return fmt.Errorf("aborted by user")
 			}
 
+			// create list of task IDs that have been removed
 			var removedIDs []int
+
+			// create hashmap that stores task ID and its error message, if task fails
 			failed := make(map[int]string)
 
+			// loop through all tasks
 			for _, t := range tasks {
+
+				// check task complies with filters
 				if flags.priority && !t.Priority {
 					continue
 				}
@@ -90,64 +132,114 @@ var removeCmd = &cobra.Command{
 				if flags.open && t.Complete {
 					continue
 				}
+
+				// remove task
 				if err := task.RemoveTask(t.ID); err != nil {
+					// add error message to hashmap, with error ID as key value
 					failed[t.ID] = err.Error()
 				} else {
+					// add task ID to removed array if successful
 					removedIDs = append(removedIDs, t.ID)
 				}
 			}
 
-			if len(removedIDs) == 0 {
-				return fmt.Errorf("no tasks matched specified filters")
+			// if there are tasks in failed map, print them to terminal
+			if len(failed) > 0 {
+
+				// exact keys and sort
+				var keys []int
+				for id := range failed {
+					keys = append(keys, id)
+				}
+				sort.Ints(keys)
+
+				// loop through sorted keys array to print failed tasks
+				fmt.Println("Failed to remove tasks:")
+				for _, id := range keys {
+					fmt.Printf("  - %d: %s\n", id, failed[id])
+				}
 			}
 
+			// throw err if all operations have failed
+			if len(removedIDs) == 0 {
+				return fmt.Errorf("no tasks removed")
+			}
+
+			// define label as tasks, change to task if only one task
 			label := "tasks"
 			if len(removedIDs) == 1 {
 				label = "task"
 			}
-			fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(removedIDs), " ", ", ", -1), "[]"))
-
-			if len(failed) > 0 {
-				fmt.Println("failed to remove tasks:")
-				for id, reason := range failed {
-					fmt.Printf("  - %d: %s\n", id, reason)
-				}
-			}
+			// print all successfully removed tasks
+			sort.Ints(removedIDs)
+			fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(removedIDs),
+				" ", ", ", -1), "[]"))
 
 			return nil
 		}
 
-		// Case 2: Arguments given — remove by task IDs
+		// argument given, remove by task IDs
+
+		// backup database
 		if err := task.BackupDB(); err != nil {
 			return fmt.Errorf("failed to back up database: %w", err)
 		}
+
+		// prompt for confirmation
 		if !util.ConfirmAction("Confirm Removal?") {
 			cmd.SilenceUsage = true
 			return fmt.Errorf("aborted by user")
 		}
 
+		// create list of task IDs that have been removed
 		var removedIDs []int
-		failed := make(map[int]string)
 
+		// create hashmap that stores task ID as string, and its error message, if task fails
+		failed := make(map[string]string)
+
+		// loop through all args input
 		for _, arg := range args {
+
+			// parse args into int, add args to failed if needed
 			id, err := strconv.Atoi(arg)
 			if err != nil {
-				fmt.Printf("invalid task ID '%s': %v\n", arg, err)
+				failed[arg] = "invalid task ID"
 				continue
 			}
 
+			// check task exists, add task to failed if task does not exist
 			if err := task.CheckTaskExists(id); err != nil {
-				failed[id] = err.Error()
+				failed[strconv.Itoa(id)] = err.Error()
 				continue
 			}
 
+			// remove task, adding to failed if needed
 			if err := task.RemoveTask(id); err != nil {
-				failed[id] = err.Error()
+				failed[strconv.Itoa(id)] = err.Error()
 			} else {
+				// removal successful, append ID to removed list
 				removedIDs = append(removedIDs, id)
 			}
 		}
 
+		// if there are tasks in failed map, print them to terminal
+		if len(failed) > 0 {
+
+			// exact keys and sort
+			var keys []string
+			for id := range failed {
+				keys = append(keys, id)
+			}
+			sort.Strings(keys)
+
+			// loop through sorted keys array to print failed tasks
+			fmt.Println("Failed to remove tasks:")
+			for _, id := range keys {
+				fmt.Printf("  - %s: %s\n", id, failed[id])
+			}
+		}
+
+		// throw err if all operations have failed
 		if len(removedIDs) == 0 {
 			return fmt.Errorf("no tasks were removed")
 		}
@@ -156,25 +248,34 @@ var removeCmd = &cobra.Command{
 		if len(removedIDs) == 1 {
 			label = "task"
 		}
+
+		sort.Ints(removedIDs)
 		fmt.Printf("Removed %s: %s\n", label, strings.Trim(strings.Replace(fmt.Sprint(removedIDs), " ", ", ", -1), "[]"))
 
-		if len(failed) > 0 {
-			fmt.Println("failed to remove tasks:")
-			for id, reason := range failed {
-				fmt.Printf("  - %d: %s\n", id, reason)
-			}
-		}
-
 		return nil
+
 	},
 }
 
+// command initialisation
 func init() {
-	rootCmd.AddCommand(removeCmd)
 
-	removeCmd.Flags().Bool("all", false, "Apply to all tasks (required for filters or to remove all)")
-	removeCmd.Flags().Bool("priority", false, "Only remove priority tasks")
-	removeCmd.Flags().Bool("normal", false, "Only remove non-priority tasks")
-	removeCmd.Flags().Bool("complete", false, "Only remove completed tasks")
-	removeCmd.Flags().Bool("open", false, "Only remove open tasks")
+	// define flags and add subcommand to root
+
+	removeCmd.Flags().BoolP("all", "a", false,
+		"Remove all tasks (can be combined with constraints)")
+
+	removeCmd.Flags().BoolP("priority", "p", false,
+		"Constrain --all to only remove high priority tasks")
+
+	removeCmd.Flags().BoolP("normal", "n", false,
+		"Constrain --all to only remove normal priority tasks")
+
+	removeCmd.Flags().BoolP("complete", "c", false,
+		"Constrain --all to only remove complete tasks")
+
+	removeCmd.Flags().BoolP("open", "o", false,
+		"Constrain --all to only remove open (incomplete) tasks")
+
+	rootCmd.AddCommand(removeCmd)
 }
