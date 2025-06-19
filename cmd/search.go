@@ -81,6 +81,15 @@ You can also narrow results using constraint flags, which show only tasks that m
 			return err
 		}
 
+		// check for flag conflicts
+		if flags.filterPriority && flags.filterNormal {
+			return fmt.Errorf("conflicting flags: cannot use --priority and --normal together")
+		}
+
+		if flags.filterComplete && flags.filterOpen {
+			return fmt.Errorf("conflicting flags: cannot use --complete and --open together")
+		}
+
 		// if no fields selected, search all
 		if !flags.searchID && !flags.searchTitle && !flags.searchDue {
 			flags.searchID = true
