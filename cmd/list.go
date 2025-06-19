@@ -67,8 +67,13 @@ Optionally, you can use flags to to narrow the results and only show tasks that 
 			return fmt.Errorf("failed to get tasks: %w", err)
 		}
 
-		// call PrintTasks, passing in task list and flags
-		util.PrintTasks(util.FilterTasks(tasks, flags.complete, flags.priority, flags.open, flags.normal))
+		// filter tasks using flags
+		filteredTasks := util.FilterTasks(tasks, flags.complete, flags.priority, flags.open, flags.normal)
+
+		// print tasks in table format
+		util.PrintTasks(filteredTasks)
+
+		// exit
 		return nil
 	},
 }
