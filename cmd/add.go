@@ -80,10 +80,10 @@ Tasks have 5 fields:
 			return err
 		}
 
-		// if due date is provided, check it matches format DD-MM-YYYY
+		// if due date is provided, check it matches format YYYY-MM-DD
 		if flags.due != "" {
 			if err := util.VerifyDate(flags.due); err != nil {
-				return fmt.Errorf("invalid date format. use DD-MM-YYYY")
+				return fmt.Errorf("invalid date format. use YYYY-MM-DD")
 			}
 		}
 
@@ -114,7 +114,7 @@ func init() {
 
 	// define flags and add subcommand to root
 
-	addCmd.Flags().StringP("due", "d", "", "Add a due date to task (DD-MM-YYYY)")
+	addCmd.Flags().StringP("due", "d", "", "Add a due date to task (YYYY--MM-DD)")
 	addCmd.Flags().BoolP("priority", "p", false, "Mark task as high priority")
 
 	rootCmd.AddCommand(addCmd)

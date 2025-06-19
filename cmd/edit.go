@@ -56,7 +56,7 @@ Specify the task ID and pass flags for the the details you wish to change.`,
 	Example: `  tidytask edit 1 --title "Buy Groceries"
 	Change the title of task 1 to "Buy Groceries"
 
-  tidytask edit 3 --due 02-01-2006 --priority
+  tidytask edit 3 --due 2006-01-02 --priority
 	Change the due date of task 3 to 2nd of January 2006, and toggle the priority status
 
   tidytask edit 5 --title "Clean Room" --due 02-01-2006
@@ -135,7 +135,7 @@ func init() {
 
 	// define flags and add subcommand to root
 
-	editCmd.Flags().StringP("due", "d", "", "Change due date of task")
+	editCmd.Flags().StringP("due", "d", "", "Change due date of task (YYYY-MM-DD)")
 	editCmd.Flags().BoolP("priority", "p", false, "Toggle the task priority")
 	editCmd.Flags().StringP("title", "t", "", "Change the title of task")
 
