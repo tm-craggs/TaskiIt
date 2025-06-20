@@ -13,29 +13,36 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 ## Installation 📦
 You can install TidyTask using precompiled binaries or building from source.
 
+
 #### Linux 🐧
 - Download archive
   - Download from [releases](https://github.com/tm-craggs/tidytask/releases)
   - Download using wget: `wget https://github.com/tm-craggs/tidytask/releases/download/untagged-abc31a2cef31ac408b1e/tidytask-linux-amd64.tar.gz`
+ 
 - Extract and install
   - Extract binary: `tar -xzf tidytask-linux-amd64.tar.gz`
   - Grant execution permissions: `chmod +x tidytask`
   - Move to binaries folder: `sudo mv tidytask /usr/local/bin`
+ 
 - Run
   - You can now run `tidytask` from anywhere 
 
-##### Mac 🍎
+
+#### Mac 🍎
 - Download the archive from [releases](https://github.com/tm-craggs/tidytask/releases)
   - For Intel: `tidytask-mac-amd64.tar.gz`
   - For Apple Silicon (M1/M2): `tidytask-mac-arm64.tar.gz`
+ 
 - Extract and install
   - Extract binary: `tar -xzf tidytask-mac-<arch>.tar.gz`
   - Grant execution permissions: `chmod +x tidytask`
   - Move to binaries folder: `sudo mv tidytask /usr/local/bin`
+
 - Run
   - You can now run `tidytask` from anywhere 
 
-##### Windows 🪟
+
+#### Windows 🪟
 - Download `tidytask-windows-amd64.zip` from [releases](https://github.com/tm-craggs/tidytask/releases)
 - Extract tidytask.exe
 - Double-click to run, or use from the terminal. `.\tidytask.exe`
@@ -43,13 +50,17 @@ You can install TidyTask using precompiled binaries or building from source.
 
 #### Build from Source 🔧
 If you prefer, or the precompiled binaries don't work, you can install by compiling from source.
+
 - Ensure `go` is installed and usable from the command line
+
 - Download Source Code:
   - From [releases](https://github.com/tm-craggs/tidytask/releases)
   - Using git: `git clone https://github.com/tm-craggs/tidytask`
+
 - Compile binary
   - Enter the repo: `cd tidytask`
   - Compile binary: `go build -o tidytask`
+
 - Install
   - Move to binaries folder: `mv tidytask /usr/local/bin`
   - Optional, delete source code: `cd ..` `rm -rf tidytask`
