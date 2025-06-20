@@ -102,7 +102,7 @@ tidytask [command] --help
 ## Contributions 🤝
 Contributions are encouraged! See **Wishlist** for some ideas.
 
-## Wishlist 🧠
+## Wishlist 💭
 - Add support for a configuration file so that users can control the colour scheme and column layout.
 - Add a basic Terminal User Interface, designed to enhance navigation without interfering with users who 
 prefer the core command line.
@@ -114,5 +114,7 @@ prefer the core command line.
 - [TableWriter for Go](https://github.com/olekukonko/tablewriter.git)
 - [termenv](https://github.com/muesli/termenv)
 
-## Support
+## Support ❤️
+If TidyTask has been helpful to you, I’m really glad to hear it!
+I’m a student building free and open source tools for fun. If you’d like to support me, you can do so via Ko-fi. There’s absolutely no pressure or expectation. Your encouragement and feedback mean just as much. <3
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G81GQB6Y)
