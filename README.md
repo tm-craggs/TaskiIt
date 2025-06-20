@@ -14,7 +14,7 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 You can install TidyTask using precompiled binaries or building from source.
 
 #### Linux 🐧
-- Download the archive from [releases](https://github.com/tm-craggs/tidytask/releases) or run: `wget https://github.com/tm-craggs/tidytask/releases/download/v1.0.0/tidytask-linux-amd64.tar.gz`
+- Download the archive from [releases](https://github.com/tm-craggs/tidytask/releases) or run: `https://github.com/tm-craggs/tidytask/releases/download/untagged-abc31a2cef31ac408b1e/tidytask-linux-amd64.tar.gz`
 - Extract and install
   - Extract binary: `tar -xzf tidytask-linux-amd64.tar.gz`
   - Grant execution permissions: `chmod +x tidytask`
