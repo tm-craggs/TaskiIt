@@ -1,6 +1,6 @@
 # TidyTask 🫧
 
-**TidyTask** is a simple Linux/Mac CLI tool for managing your to-do list, built with Go using Cobra.
+**TidyTask** is a simple CLI tool for managing your to-do list, built with Go using Cobra.
 
 ## Features ✨
 TidyTask is designed for users who want a no-nonsense way to manage their tasks from the terminal 
