@@ -61,18 +61,18 @@ You must only use one method. Supplying task IDs together with the --all flag fo
 	// main command logic
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		// check args
-		if len(args) == 0 {
-			return fmt.Errorf("no arguments provided; task ID or --all flag required")
-		}
-
 		// get flags
 		flags, err := getCompleteFlags(cmd)
 		if err != nil {
 			return err
 		}
 
-		// check flags have not been used with task IDs
+		// disallow no input
+		if len(args) == 0 && !flags.all {
+			return fmt.Errorf("no arguments provided; task ID or --all flag required")
+		}
+
+		// disallow mixed usage
 		if len(args) > 0 && (flags.all || flags.priority || flags.normal) {
 			return fmt.Errorf("cannot use task IDs and batch operation flags together")
 		}
