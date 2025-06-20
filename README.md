@@ -82,6 +82,22 @@ The --all flag can be used with constrictions to target specific types of task
 tidytask reopen --all --priority
 ```
 
+#### Search
+The search command displays all tasks that match a certain keyword. By default, it searches all fields.
+```
+tidytask search "homework"
+```
+
+You can specify with flags which fields to search. For example, this is a search for tasks with the number 2025 in their due date:
+```
+tidytask search 2025 --due
+```
+
+Like with list, you can use flags just view certain types of task. For example, this is a search for all priority tasks with essay in the title:
+```
+tidytask search essay --title --complete
+```
+
 #### Undo
 
 To reverse the previous action, run:
