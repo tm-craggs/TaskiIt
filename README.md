@@ -100,7 +100,7 @@ tidytask [command] --help
 ```
 
 ## Contributions 🤝
-Contributions are encouraged! See **Wishlist** for some ideas.
+Contributions are encouraged! See **Wishlist** for some ideas. I will respond to pull requests and issues as soon as possible.
 
 ## Wishlist 💭
 - Add support for a configuration file so that users can control the colour scheme and column layout.
