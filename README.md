@@ -11,24 +11,42 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 - **Offline**: Fully local, no internet or accounts required.
 
 ## Installation 📦
-You can install TidyTask by building from source. Homebrew and AUR releases coming soon. 
+You can install TidyTask using precompiled binaries or building from source.
 
-##### Linux/Mac 🐧🍎
-- Ensure the `go` and `git` packages are installed through your system's package manager
-- Run the following commands in your terminal:
-- `git clone https://github.com/tm-craggs/TidyTask.git`
-- `cd tidytask`
-- `go build -o tidytask`
-- `sudo mv tidytask /usr/local/bin` 
+#### Linux 🐧
+- Download the archive from [releases](https://github.com/tm-craggs/tidytask/releases) or run: `wget https://github.com/tm-craggs/tidytask/releases/download/v1.0.0/tidytask-linux-amd64.tar.gz`
+- Extract and install
+  - Extract binary: `tar -xzf tidytask-linux-amd64.tar.gz`
+  - Grant execution permissions: `chmod +x tidytask`
+  - Move to binaries folder: `sudo mv tidytask /usr/local/bin`
+- Run
+  - You can now run `tidytask` from anywhere 
+
+##### Mac 🍎
+- Download the archive from [releases](https://github.com/tm-craggs/tidytask/releases)
+  - For Intel: `tidytask-mac-amd64.tar.gz`
+  - For Apple Silicon (M1/M2): `tidytask-mac-arm64.tar.gz`
+- Extract and install
+  - Extract binary: `tar -xzf tidytask-mac-<arch>.tar.gz`
+  - Grant execution permissions: `chmod +x tidytask`
+  - Move to binaries folder: `sudo mv tidytask /usr/local/bin`
+- Run
+  - You can now run `tidytask` from anywhere 
 
 ##### Windows 🪟
-- Install [Go for Windows](https://go.dev/dl/) and [Git for Windows](https://git-scm.com/downloads/win)
-- Run the following commands in Command Prompt or PowerShell:
-- `git clone https://github.com/tm-craggs/TidyTask.git`
-- `cd tidytask`
-- `go build -o tidytask.exe`
-- `move .\tidytask.exe C:\Program Files\TidyTask\`
-- Ensure the folder is added to PATH
+- Download `tidytask-windows-amd64.zip` from [releases](https://github.com/tm-craggs/tidytask/releases)
+- Extract tidytask.exe
+- Double-click to run, or use from the terminal. `.\tidytask.exe`
+- Optional: Add the containing folder to PATH to run `tidytask` from anywhere
+
+#### Build from Source 🔧
+If you prefer, or the precompiled binaries don't work, you can install by compiling from source.
+- Ensure `git` and `go` are installed
+- Clone the repo: `git clone https://github.com/tm-craggs/tidytask`
+- Enter the repo: `cd tidytask`
+- Compile binary: `go build -o tidytask`
+- Move to binaries folder: `mv tidytask /usr/local/bin`
+- Optional, delete source code: `cd ..` `rm -rf tidytask`
 
 ## Usage 🚀
 Once installed, you can start using TidyTask directly from your terminal.
