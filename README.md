@@ -47,7 +47,7 @@ The easiest way to install TidyTask on Mac is to use **Homebrew**
   
 - Install:
 
-- `brew install tm-craggs/tidytask/tidytask`
+  `brew install tm-craggs/tidytask/tidytask`
 
 <br>
 
