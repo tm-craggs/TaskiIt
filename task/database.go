@@ -62,6 +62,30 @@ func InitDB() error {
 	return nil
 }
 
+// HardReset deletes both the main database file and the backup file, if they exist.
+func HardReset() error {
+	// close the DB connection if open
+	if err := CloseDB(); err != nil {
+		return fmt.Errorf("failed to close DB before reset: %w", err)
+	}
+
+	// get main DB and backup paths
+	dbPath := getDBPath()
+	backupPath := dbPath + ".bak"
+
+	// delete the main database file
+	if err := os.Remove(dbPath); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to delete database file: %w", err)
+	}
+
+	// delete the backup file
+	if err := os.Remove(backupPath); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to delete backup file: %w", err)
+	}
+
+	return nil
+}
+
 // CloseDB safely closes the database connection, if it had been opened.
 // it returns any error encountered during close, and if the DB was never initialised, it returns nil
 // this function is always called on exit of tidytask

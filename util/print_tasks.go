@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/olekukonko/errors"
 	"log"
 	"os"
 	"strings"
@@ -21,6 +22,9 @@ var (
 	orange     = p.Color("#FF8000")
 	yellow     = p.Color("#D4D41E")
 
+	// ErrNoTasks is a custom error for when the input task list is empty
+	ErrNoTasks = errors.New("no tasks")
+
 	// helper function to apply colour to strings (or not if nil)
 	colorise = func(s string, c termenv.Color) string {
 		if c == nil {
@@ -36,10 +40,9 @@ var (
 )
 
 // PrintTasks takes a slice of Task structs and displays them as a colour coded table in the terminal
-func PrintTasks(tasks []task.Task) {
+func PrintTasks(tasks []task.Task) error {
 	if len(tasks) == 0 {
-		fmt.Println("No tasks found")
-		return
+		return errors.Errorf("no tasks")
 	}
 
 	// create table and set up table headers
@@ -83,6 +86,7 @@ func PrintTasks(tasks []task.Task) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return nil
 }
 
 // formatCompletedTask returns styled fields for a completed task
