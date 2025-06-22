@@ -2,6 +2,14 @@
 
 **TidyTask** is a simple CLI tool for managing your to-do list, built with Go using Cobra.
 
+[![GitHub release](https://img.shields.io/github/release/tm-craggs/tidytask.svg)](https://github.com/tm-craggs/tidytask/releases)
+[![GoDoc](https://godoc.org/github.com/tm-craggs/tidytask?status.svg)](https://godoc.org/github.com/tm-craggs/tidytask)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tm-craggs/tidytask)](https://goreportcard.com/report/github.com/tm-craggs/tidytask)
+[![Downloads](https://img.shields.io/github/downloads/tm-craggs/tidytask/total.svg)](https://github.com/tm-craggs/tidytask/releases)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+
+<br>
+
 ## Features ✨
 TidyTask is designed for users who want a no-nonsense way to manage their tasks from the terminal 
 
@@ -10,32 +18,53 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 - **Concise**: Short, intuitive commands and powerful flags.
 - **Offline**: Fully local, no internet or accounts required.
 
+<br>
+
 ## Installation 📦
-You can install TidyTask by building from source. Homebrew and AUR releases coming soon. 
 
-##### Linux/Mac 🐧🍎
-- Ensure the `go` and `git` packages are installed through your system's package manager
-- Run the following commands in your terminal:
-- `git clone https://github.com/tm-craggs/TidyTask.git`
-- `cd tidytask`
-- `go build -o tidytask`
-- `sudo mv tidytask /usr/local/bin` 
 
-##### Windows 🪟
-- Install [Go for Windows](https://go.dev/dl/) and [Git for Windows](https://git-scm.com/downloads/win)
-- Run the following commands in Command Prompt or PowerShell:
-- `git clone https://github.com/tm-craggs/TidyTask.git`
-- `cd tidytask`
-- `go build -o tidytask.exe`
-- `move .\tidytask.exe C:\Program Files\TidyTask\`
-- Ensure the folder is added to PATH
+#### Linux 🐧
+- Download archive
+
+  `wget https://github.com/tm-craggs/tidytask/archive/refs/tags/v1.0.0.tar.gz`
+ 
+- Extract and install
+  
+  `tar -xzf v1.0.0.tar.gz`
+  
+  `chmod +x tidytask`
+  
+  `sudo mv tidytask /usr/local/bin`
+  
+- Optional: Remove source archive
+  
+  `rm -rf v1.0.0.tar.gz`
+
+<br>
+
+#### Mac 🍎
+
+The easiest way to install TidyTask on Mac is to use **Homebrew**
+
+- Install [Homebrew](https://brew.sh/)
+- Add the tap:
+  
+  `brew tap tm-craggs/tidytask https://github.com/tm-craggs/homebrew-tidytask.git`
+  
+- Install:
+
+  `brew install tm-craggs/tidytask/tidytask`
+
+<br>
 
 ## Usage 🚀
 Once installed, you can start using TidyTask directly from your terminal.
 
+<br>
+
 #### Add
 
-To add a task, run:
+To add a task run:
 ```
 tidytask add "First Task"
 ```
@@ -49,6 +78,9 @@ Tasks can also be marked as high priority using --priority:
 ```
 tidytask add "Submit Essay" --due 2025-06-25 --priority
 ```
+
+<br>
+
 #### List
 
 To view your to-do list use:
@@ -61,11 +93,16 @@ You can use flags to just view certain types of task:
 tidytask list --priority
 ```
 
+<br>
+
 #### Complete/Remove/Reopen
+
 These commands are formatted the same way the same way.
 - `complete` → Marks a task as complete
 - `remove` → Removes a task from to-do list
 - `reopen` → Marks completed tasks as incomplete
+
+<br>
 
 To complete task numbers 1, 2 and 3:
 ```
@@ -82,7 +119,9 @@ The --all flag can be used with constrictions to target specific types of task
 tidytask reopen --all --priority
 ```
 
-#### Search
+<br>
+
+### Search
 The search command displays all tasks that match a certain keyword. By default, it searches all fields.
 ```
 tidytask search "homework"
@@ -97,6 +136,8 @@ Like with list, you can use flags just view certain types of task. For example, 
 ```
 tidytask search essay --title --complete
 ```
+
+<br>
 
 #### Undo
 
@@ -115,8 +156,12 @@ To view the help page for a specific command use:
 tidytask [command] --help
 ```
 
+<br>
+
 ## Contributions 🤝
 Contributions are encouraged! See **Wishlist** for some ideas. I will respond to pull requests and issues as soon as possible.
+
+<br>
 
 ## Wishlist 💭
 - Add support for a configuration file so that users can control the colour scheme and column layout.
@@ -124,14 +169,21 @@ Contributions are encouraged! See **Wishlist** for some ideas. I will respond to
 prefer the core command line.
 - Implement an action log table and multi-level undo
 
+<br>
+
 ## Libraries Used 📚
 - [Cobra](https://github.com/spf13/cobra.git)
 - [go-sqlite3](https://github.com/mattn/go-sqlite3.git)
 - [TableWriter for Go](https://github.com/olekukonko/tablewriter.git)
 - [termenv](https://github.com/muesli/termenv)
 
+<br>
+
 ## Support ❤️
-If TidyTask has been helpful to you, I’m really glad to hear it!
-I’m a student building free and open source tools for fun, if you’d like to support me you can do so via Ko-fi. There’s absolutely no pressure or expectation. Your encouragement and feedback mean just as much. <3
+TidyTask may be a simple tool but I've put a lot of time and love into building it, if you find it helpful I'm so glad!
+
+I’m a student building free and open source tools for fun. If you would like to support my work, you can do so on Ko-Fi. 
+
+There is absolutely no pressure or obligation, your kind words mean just as much to me.  <3
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G81GQB6Y)
