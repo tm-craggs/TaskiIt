@@ -10,7 +10,7 @@ import (
 var resetCmd = &cobra.Command{
 	Use:                   "reset",
 	DisableFlagsInUseLine: true,
-	Short:                 "Reset your task list and backups to a clean state",
+	Short:                 "Reset all TidyTask data",
 	Long: `The 'reset' command hard resets TidyTask by deleting the file which stores your tasks, and the backup file
 if they exist. New files are created on next launch. 
 
