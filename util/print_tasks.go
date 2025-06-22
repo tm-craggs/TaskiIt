@@ -15,15 +15,17 @@ import (
 var (
 	// set up terminal colour profile and predefined colour values
 	p          = termenv.ColorProfile()
-	green      = p.Color("#00FF00")
+	green      = p.Color("#00CC00")
 	red        = p.Color("#FF5555")
 	brightBlue = p.Color("#35c5ff")
 	orange     = p.Color("#FF8000")
-	yellow     = p.Color("#FFFF00")
-	grey       = p.Color("#FFFFFF")
+	yellow     = p.Color("#D4D41E")
 
-	// helper function to apply colour to strings
+	// helper function to apply colour to strings (or not if nil)
 	colorise = func(s string, c termenv.Color) string {
+		if c == nil {
+			return s
+		}
 		return termenv.String(s).Foreground(c).String()
 	}
 
@@ -58,8 +60,8 @@ func PrintTasks(tasks []task.Task) {
 		} else {
 			// if task is incomplete, format as incomplete
 			complete, title, due = formatIncompleteTask(t)
-			// incomplete tasks use brightBlue for priority, grey for normal
-			priority = formatPriority(t.Priority, brightBlue, grey)
+			// incomplete tasks use brightBlue for priority, no color for normal
+			priority = formatPriority(t.Priority, brightBlue, nil)
 		}
 
 		// append the formatted task data as a row in the table
@@ -131,7 +133,7 @@ func formatCompletedTask(t task.Task) (string, string, string) {
 
 func formatIncompleteTask(t task.Task) (string, string, string) {
 
-	// colour green tick for complete field
+	// colour red cross for complete field
 	complete := colorise("✘", red)
 
 	// get a relative due date
@@ -149,7 +151,7 @@ func formatIncompleteTask(t task.Task) (string, string, string) {
 	case "Tomorrow":
 		return complete, colorise(t.Title, yellow), colorise(relativeDue, yellow)
 	default:
-		return complete, colorise(t.Title, grey), colorise(relativeDue, grey)
+		return complete, t.Title, relativeDue
 	}
 }
 
@@ -191,7 +193,7 @@ func formatDeadline(due string) string {
 	// calculate the difference in days between today's date and the due date
 	days := int(parsedDue.Sub(today).Hours() / 24)
 
-	// show overdue, today, or tomorrow, or day if the week when task is within a week.
+	// show overdue, today, or tomorrow, or day of the week when task is within a week.
 	// otherwise, show raw date
 	switch {
 	case days < 0:
