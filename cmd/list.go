@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tm-craggs/tidytask/task"
@@ -85,7 +86,14 @@ Optionally, you can use flags to to narrow the results and only show tasks that 
 		filteredTasks := util.FilterTasks(tasks, flags.complete, flags.priority, flags.open, flags.normal)
 
 		// print tasks in table format
-		util.PrintTasks(filteredTasks)
+		err = util.PrintTasks(filteredTasks)
+		if err != nil {
+			if errors.Is(err, util.ErrNoTasks) {
+				fmt.Println("No tasks. Your to-do list is empty.")
+				return nil
+			}
+			return fmt.Errorf("failed to print tasks: %w", err)
+		}
 
 		// exit
 		return nil
