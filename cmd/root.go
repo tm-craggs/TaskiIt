@@ -2,6 +2,8 @@
 Copyright © 2025 NAME HERE <tom.craggs@protonmail.com>
 */
 
+// Package cmd defines the command-line interface for the TidyTask application.
+// It uses Cobra to manage subcommands like add, list, complete, and reset.
 package cmd
 
 import (
@@ -16,7 +18,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     "tidytask",
 	Short:   "A simple Linux CLI tool for managing your to-do-list. Built with Go",
-	Version: "1.0.0",
+	Version: "1.0.1",
 	Long: `
  _____ _     _     _____         _    
 |_   _(_)   | |   |_   _|       | |   
