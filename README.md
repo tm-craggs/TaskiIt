@@ -2,6 +2,12 @@
 
 **TidyTask** is a simple CLI tool for managing your to-do list, built with Go using Cobra.
 
+[![GitHub release](https://img.shields.io/github/release/tm-craggs/tidytask.svg)](https://github.com/tm-craggs/tidytask/releases)
+[![GoDoc](https://godoc.org/github.com/tm-craggs/tidytask?status.svg)](https://godoc.org/github.com/tm-craggs/tidytask)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tm-craggs/tidytask)](https://goreportcard.com/report/github.com/tm-craggs/tidytask)
+[![Downloads](https://img.shields.io/github/downloads/tm-craggs/tidytask/total.svg)](https://github.com/tm-craggs/tidytask/releases)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+
 <br>
 
 ## Features ✨
