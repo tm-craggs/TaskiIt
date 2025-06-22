@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <tom.craggs@protonmail.com>
+Copyright © 2025 Thomas Craggs <tom.craggs@protonmail.com>
 */
 
 // Package cmd defines the command-line interface for the TidyTask application.
