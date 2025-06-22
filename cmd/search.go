@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tm-craggs/tidytask/task"
@@ -114,7 +115,15 @@ You can also narrow results using constraint flags, which show only tasks that m
 		filteredTasks := util.FilterTasks(tasks, flags.filterComplete, flags.filterPriority, flags.filterOpen, flags.filterNormal)
 
 		// print tasks in table format
-		util.PrintTasks(filteredTasks)
+		err = util.PrintTasks(filteredTasks)
+		if err != nil {
+			// handle no tasks error gracefully
+			if errors.Is(err, util.ErrNoTasks) {
+				fmt.Println("No results for your search.")
+				return nil
+			}
+			return fmt.Errorf("failed to print tasks: %w", err)
+		}
 
 		// exit
 		return nil
