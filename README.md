@@ -146,6 +146,17 @@ To reverse the previous action, run:
 tidytask undo
 ```
 
+<br>
+
+#### Reset
+
+To reset all TidyTask data, run:
+```
+tidytask reset
+```
+
+<br>
+
 #### Help
 You can view all commands and general information, use:
 ```
