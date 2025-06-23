@@ -37,8 +37,8 @@ func getCompleteFlags(cmd *cobra.Command) (completeFlags, error) {
 // completeCmd represents the complete subcommand
 var completeCmd = &cobra.Command{
 	Use:   "complete [ID...] \n  tidytask complete --all [flags]",
-	Short: "Complete tasks from your to-do list",
-	Long: `The 'complete' command allows you to mark task as complete in your to-do list.
+	Short: "Complete tasks on your to-do list",
+	Long: `The 'complete' command allows you to mark tasks as complete in your to-do list.
 
 You can complete tasks in two ways:
 1. By specifying one or more task IDs directly
