@@ -73,13 +73,13 @@ TidyTask is available on the [Arch User Repository](https://aur.archlinux.org/pa
 The easiest way to install TidyTask on Mac is to use **Homebrew**
 
 - Install [Homebrew](https://brew.sh/)
-- Add the tap:
+- Add the tap
   
   ```
   brew tap tm-craggs/tidytask https://github.com/tm-craggs/homebrew-tidytask.git
   ```
   
-- Install:
+- Install
 
   ```
   brew install tm-craggs/tidytask/tidytask
@@ -103,7 +103,7 @@ If you would rather build from source, follow these instructions.
   ```
   tar -xzf v1.0.1.tar.gz
 
-  cd v1.0.1
+  cd tidytask-1.0.1
   
   go build -o tidytask
   
@@ -117,7 +117,7 @@ If you would rather build from source, follow these instructions.
   ```
   cd ..
   
-  rm -rf v.1.0.1
+  rm -rf tidytask-1.0.1
   
   rm v1.0.1.tar.gz
   ```
