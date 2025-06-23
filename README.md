@@ -2,11 +2,11 @@
 
 **TidyTask** is a simple CLI tool for managing your to-do list, built with Go using Cobra.
 
-[![GitHub release](https://img.shields.io/github/release/tm-craggs/tidytask.svg)](https://github.com/tm-craggs/tidytask/releases)
-![AUR](https://img.shields.io/aur/version/tidytask)
-[![GoDoc](https://godoc.org/github.com/tm-craggs/tidytask?status.svg)](https://godoc.org/github.com/tm-craggs/tidytask)
-[![Go Report Card](https://goreportcard.com/badge/github.com/tm-craggs/tidytask)](https://goreportcard.com/report/github.com/tm-craggs/tidytask)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/tm-craggs/tidytask.svg?style=for-the-badge&color=24292e&logo=github)](https://github.com/tm-craggs/tidytask/releases)
+[![AUR](https://img.shields.io/aur/version/tidytask?color=0f94d2&label=AUR&logo=arch-linux&style=for-the-badge)](https://aur.archlinux.org/packages/tidytask/)
+[![Go Report Card](https://img.shields.io/badge/go%20report-A+-4caf50?logo=go&logoColor=white&style=for-the-badge)](https://goreportcard.com/report/github.com/tm-craggs/tidytask)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-555555?style=for-the-badge&color=24292e)](LICENSE)
+
 
 <br>
 
@@ -103,7 +103,7 @@ If you would rather build from source, follow these instructions.
   ```
   tar -xzf v1.0.1.tar.gz
 
-  cd v1.0.1`
+  cd v1.0.1
   
   go build -o tidytask
   
