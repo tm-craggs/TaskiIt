@@ -36,35 +36,21 @@ TidyTask is available on the [Arch User Repository](https://aur.archlinux.org/pa
 
   ```
   paru -S tidytask
-  
+  ```
+  ```
   yay -S tidytask
   ```
 
-<br>
 
-#### All Other Distributions
-- Download binary
+#### All Distributions
 
-  ```
-  wget https://github.com/tm-craggs/tidytask/releases/download/v1.0.1/tidytask-linux-x86.tar.gz
-  ```
- 
-- Extract and install
-  
-  ```
-  tar -xzf tidytask-linux-x86.tar.gz
-  
-  chmod +x tidytask
-  
-  sudo mv tidytask /usr/local/bin
-  ```
-
-- Optional: Remove Archive
+- Run the install script
 
   ```
-  rm tidytask-linux-x86.tar.gz
+  curl -sSL https://raw.githubusercontent.com/tm-craggs/tidytask/main/install.sh | bash
   ```
-  
+
+> **Note:** These installation methods are recommended for Linux. However, the **Homebrew** (macOS) or **Build From Source** options below also work well. 
 
 <br>
 
@@ -79,7 +65,7 @@ The easiest way to install TidyTask on Mac is to use **Homebrew**
   brew tap tm-craggs/tidytask https://github.com/tm-craggs/homebrew-tidytask.git
   ```
   
-- Install
+- Install TidyTask
 
   ```
   brew install tm-craggs/tidytask/tidytask
@@ -112,7 +98,7 @@ If you would rather build from source, follow these instructions.
   sudo mv tidytask /usr/local/bin
   ```
 
-- Optional: Clean up source code
+- Optional: Clean up source files
 
   ```
   cd ..
