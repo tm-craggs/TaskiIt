@@ -2,12 +2,15 @@
 
 set -e
 
-VERSION="V1.0.1"
+VERSION="v1.0.1"
 ARCHIVE="tidytask-linux-x86.tar.gz"
 URL="https://github.com/tm-craggs/tidytask/releases/download/$VERSION/$ARCHIVE"
 
 echo "Downloading TidyTask $VERSION..."
-curl -LO "$URL"
+curl -fLO "$URL" || {
+  echo "Failed to download $ARCHIVE. Check the URL or version."
+  exit 1
+}
 
 echo "Extracting..."
 tar -xzf "$ARCHIVE"
