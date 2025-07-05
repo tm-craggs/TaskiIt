@@ -37,7 +37,7 @@ func getReopenFlags(cmd *cobra.Command) (reopenFlags, error) {
 // reopenCmd represents the reopen subcommand
 var reopenCmd = &cobra.Command{
 	Use:   "reopen [ID...] \n  tidytask reopen --all [flags]",
-	Short: "Reopen tasks from your to-do list",
+	Short: "Reopen tasks on your to-do list",
 	Long: `The 'reopen' command allows you to mark complete tasks as open (incomplete) in your to-do list.
 
 You can reopen tasks in two ways:

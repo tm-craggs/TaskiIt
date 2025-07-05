@@ -2,11 +2,11 @@
 
 **TidyTask** is a simple CLI tool for managing your to-do list, built with Go using Cobra.
 
-[![GitHub release](https://img.shields.io/github/release/tm-craggs/tidytask.svg)](https://github.com/tm-craggs/tidytask/releases)
-[![GoDoc](https://godoc.org/github.com/tm-craggs/tidytask?status.svg)](https://godoc.org/github.com/tm-craggs/tidytask)
-[![Go Report Card](https://goreportcard.com/badge/github.com/tm-craggs/tidytask)](https://goreportcard.com/report/github.com/tm-craggs/tidytask)
-[![Downloads](https://img.shields.io/github/downloads/tm-craggs/tidytask/total.svg)](https://github.com/tm-craggs/tidytask/releases)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/tm-craggs/tidytask.svg?style=for-the-badge&color=24292e&logo=github)](https://github.com/tm-craggs/tidytask/releases)
+[![AUR](https://img.shields.io/aur/version/tidytask?color=0f94d2&label=AUR&logo=arch-linux&style=for-the-badge)](https://aur.archlinux.org/packages/tidytask/)
+[![Go Report Card](https://img.shields.io/badge/go%20report-A+-4caf50?logo=go&logoColor=white&style=for-the-badge)](https://goreportcard.com/report/github.com/tm-craggs/tidytask)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-555555?style=for-the-badge&color=24292e)](LICENSE)
+
 
 <br>
 
@@ -18,42 +18,109 @@ TidyTask is designed for users who want a no-nonsense way to manage their tasks 
 - **Concise**: Short, intuitive commands and powerful flags.
 - **Offline**: Fully local, no internet or accounts required.
 
+![TidyTask List](assets/tidytask-list.png)
+
 <br>
 
 ## Installation 📦
 
+<br>
 
-#### Linux 🐧
-- Download archive
+### Linux 🐧
 
-  `wget https://github.com/tm-craggs/tidytask/archive/refs/tags/v1.0.0.tar.gz`
- 
-- Extract and install
+#### Arch Based Distributions
+
+TidyTask is available on the [Arch User Repository](https://aur.archlinux.org/packages/tidytask).
+
+- Download using an AUR helper such as `paru` or `yay`
+
+  ```
+  paru -S tidytask
   
-  `tar -xzf v1.0.0.tar.gz`
-  
-  `chmod +x tidytask`
-  
-  `sudo mv tidytask /usr/local/bin`
-  
-- Optional: Remove source archive
-  
-  `rm -rf v1.0.0.tar.gz`
+  yay -S tidytask
+  ```
 
 <br>
 
-#### Mac 🍎
+#### All Other Distributions
+- Download binary
+
+  ```
+  wget https://github.com/tm-craggs/tidytask/releases/download/v1.0.1/tidytask-linux-x86.tar.gz
+  ```
+ 
+- Extract and install
+  
+  ```
+  tar -xzf tidytask-linux-x86.tar.gz
+  
+  chmod +x tidytask
+  
+  sudo mv tidytask /usr/local/bin
+  ```
+
+- Optional: Remove Archive
+
+  ```
+  rm tidytask-linux-x86.tar.gz
+  ```
+  
+
+<br>
+
+### MacOS 🍎
 
 The easiest way to install TidyTask on Mac is to use **Homebrew**
 
 - Install [Homebrew](https://brew.sh/)
-- Add the tap:
+- Add the tap
   
-  `brew tap tm-craggs/tidytask https://github.com/tm-craggs/homebrew-tidytask.git`
+  ```
+  brew tap tm-craggs/tidytask https://github.com/tm-craggs/homebrew-tidytask.git
+  ```
   
-- Install:
+- Install
 
-  `brew install tm-craggs/tidytask/tidytask`
+  ```
+  brew install tm-craggs/tidytask/tidytask
+  ```
+
+  <br>
+
+### Build From Source 🛠️
+
+If you would rather build from source, follow these instructions.
+
+- Ensure `go` is installed via your distributions package manager.
+- Download source code archive
+
+  ```
+  wget https://github.com/tm-craggs/tidytask/archive/refs/tags/v1.0.1.tar.gz
+  ```
+
+- Extract, Build and Install
+
+  ```
+  tar -xzf v1.0.1.tar.gz
+
+  cd tidytask-1.0.1
+  
+  go build -o tidytask
+  
+  chmod +x tidytask
+  
+  sudo mv tidytask /usr/local/bin
+  ```
+
+- Optional: Clean up source code
+
+  ```
+  cd ..
+  
+  rm -rf tidytask-1.0.1
+  
+  rm v1.0.1.tar.gz
+  ```
 
 <br>
 
