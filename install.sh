@@ -13,6 +13,7 @@ curl -fLO "$URL" || {
 }
 
 echo "Extracting..."
+[ -f tidytask ] && rm tidytask
 tar -xzf "$ARCHIVE"
 
 echo "Installing to /usr/local/bin..."
