@@ -2,13 +2,13 @@
 
 set -e
 
-VERSION="v1.0.1"
+VERSION="V1.0.1"
 ARCHIVE="tidytask-linux-x86.tar.gz"
 URL="https://github.com/tm-craggs/tidytask/releases/download/$VERSION/$ARCHIVE"
 
 echo "Downloading TidyTask $VERSION..."
 if ! curl -fLO "$URL"; then
-  echo "❌ Failed to download $ARCHIVE from $URL"
+  echo "Failed to download $ARCHIVE from $URL"
   exit 1
 fi
 
