@@ -7,10 +7,10 @@ ARCHIVE="tidytask-linux-x86.tar.gz"
 URL="https://github.com/tm-craggs/tidytask/releases/download/$VERSION/$ARCHIVE"
 
 echo "Downloading TidyTask $VERSION..."
-curl -fLO "$URL" || {
-  echo "Failed to download $ARCHIVE. Check the URL or version."
+if ! curl -fLO "$URL"; then
+  echo "❌ Failed to download $ARCHIVE from $URL"
   exit 1
-}
+fi
 
 echo "Extracting..."
 [ -f tidytask ] && rm tidytask
